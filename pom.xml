@@ -46,6 +46,49 @@
             <version>${flink.version}</version>
         </dependency>
 
+        <!--
+        Apache Flink Agents - Event-Driven AI Agent Framework
+
+        NOTE: Flink Agents v0.1.0 was just released and artifacts may not yet be in Maven Central.
+        Once available, uncomment the dependencies below.
+
+        To build from source:
+        1. git clone https://github.com/apache/flink-agents.git
+        2. cd flink-agents
+        3. ./tools/build.sh
+        4. Install to local Maven repo: mvn install -DskipTests
+
+        For updates, check: https://nightlies.apache.org/flink/flink-agents-docs-release-0.1/
+        -->
+
+        <!-- Flink Agents API - Built from source and installed locally -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-agents-api</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Flink Agents Plan - Workflow agent support -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-agents-plan</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Flink Agents Runtime - Agent execution runtime -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-agents-runtime</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Flink Agents Ollama Integration - LLM support -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-agents-integrations-chat-models-ollama</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+
         <!-- LangChain4J Core -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
@@ -204,6 +247,19 @@
             <url>https://repo1.maven.org/maven2/</url>
             <snapshots>
                 <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- Apache Snapshot Repository (for Flink Agents snapshots) -->
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>https://repository.apache.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>

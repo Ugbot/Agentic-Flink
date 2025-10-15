@@ -4,6 +4,8 @@
 
 Think of this as "AI agents that never forget, always recover, and scale automatically."
 
+**🎉 NEW:** Apache Flink Agents Integration COMPLETE! Try the [Interactive Demo](#-try-the-interactive-demo) | See [Integration Guide](FLINK_AGENTS_INTEGRATION.md)
+
 ## 📖 What Is This?
 
 Agentic Flink lets you build **AI agents** - autonomous programs that can:
@@ -25,10 +27,51 @@ Agentic Flink lets you build **AI agents** - autonomous programs that can:
 | Feature | What It Means |
 |---------|---------------|
 | **Built on Apache Flink** | Your agents never lose data, even if servers crash |
+| **Apache Flink Agents Ready** | Integration prepared for official Apache framework (v0.1) |
 | **Context Management** | Agents remember what's important and forget what's not |
 | **RAG Built-In** | Connect your AI to your documents and databases |
 | **Tool Framework** | Easily add new capabilities to your agents |
 | **Beginner Friendly** | Clear examples and extensive documentation |
+
+### 🔥 Apache Flink Agents Integration
+
+We're prepared to integrate with **Apache Flink Agents v0.1**, the official AI agent framework from the Apache Flink community!
+
+**What this means:**
+- ✅ **Hybrid Architecture** - Use official Flink Agents + our innovations
+- ✅ **ReAct Agents** - Autonomous reasoning-acting loops
+- ✅ **MCP Protocol** - Standard Model Context Protocol support
+- ✅ **Better Observability** - Meta-events for enhanced monitoring
+- ✅ **Future-Proof** - Aligned with Apache Flink roadmap
+
+**Current Status:** ✅ Integration COMPLETE and ready to use! See [INTEGRATION_SUCCESS.md](INTEGRATION_SUCCESS.md) for details.
+
+## 🎮 Try the Interactive Demo
+
+**NEW: Interactive demo showcasing the Flink Agents integration!**
+
+```bash
+./run-demo.sh
+```
+
+**What you'll see:**
+- ✅ Real-time event conversion between frameworks
+- ✅ Tool execution via Flink Agents
+- ✅ Validation and context management in action
+- ✅ Full customer support workflow
+- ✅ Performance testing
+- ✅ Architecture visualization
+
+**Demo includes:**
+1. Order Lookup Tool Demo
+2. Refund Processing Demo
+3. Knowledge Base Search Demo
+4. Full Customer Support Workflow
+5. System Status Monitoring
+6. Performance Test (100 events)
+7. Architecture Diagram
+
+See [DEMO_GUIDE.md](DEMO_GUIDE.md) for complete demo documentation.
 
 ## 🚀 5-Minute Quick Start
 
