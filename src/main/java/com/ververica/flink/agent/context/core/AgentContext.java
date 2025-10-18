@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Complete agent context containing all memory types
@@ -11,6 +12,7 @@ import lombok.Data;
  * <p>Manages short-term, long-term, and steering memory
  */
 @Data
+@NoArgsConstructor  // Required for Jackson deserialization
 public class AgentContext implements Serializable {
 
   private String agentId;

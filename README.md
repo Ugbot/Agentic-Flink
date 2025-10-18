@@ -1,206 +1,140 @@
-# 🤖 Agentic Flink - Build Smart AI Agents with Apache Flink
+# Agentic Flink - AI Agents on Apache Flink
 
-> **Easy-to-use framework for creating autonomous AI agents that run on Apache Flink**
+**Status:** Experimental framework for building AI agents on Apache Flink
+**Author:** Ben Gamble
+**License:** Apache License 2.0
 
-Think of this as "AI agents that never forget, always recover, and scale automatically."
+This is a research project exploring integration of AI agent patterns with Apache Flink's distributed stream processing capabilities.
 
-**🎉 NEW:** Apache Flink Agents Integration COMPLETE! Try the [Interactive Demo](#-try-the-interactive-demo) | See [Integration Guide](FLINK_AGENTS_INTEGRATION.md)
+## Overview
 
-## 📖 What Is This?
+Experimental framework for building AI agents with stream processing capabilities:
 
-Agentic Flink lets you build **AI agents** - autonomous programs that can:
-- 🧠 Make decisions using AI (like ChatGPT/Ollama)
-- 🔧 Use tools (search databases, call APIs, process data)
-- 💾 Remember important information (short-term and long-term memory)
-- ✅ Validate their work and correct mistakes
-- 🔄 Handle errors gracefully and try again
-- 📈 Scale to handle millions of requests
+- AI decision making (OpenAI/Ollama integration)
+- Tool execution framework
+- Context management with MoSCoW prioritization
+- Validation and correction patterns
+- Error handling and retry logic
+- Built on Apache Flink for distributed processing
 
-**Perfect for:**
-- Customer service bots that remember conversations
-- Data processing pipelines that make intelligent decisions
-- Automated workflows that adapt to changing conditions
-- Any AI application that needs to be reliable and scalable
+Potential applications include customer service automation, intelligent data pipelines, and adaptive workflows. This is research-grade software exploring agent patterns in streaming systems.
 
-## 🎯 Why Use This Framework?
+## Key Components
 
-| Feature | What It Means |
-|---------|---------------|
-| **Built on Apache Flink** | Your agents never lose data, even if servers crash |
-| **Apache Flink Agents Ready** | Integration prepared for official Apache framework (v0.1) |
-| **Context Management** | Agents remember what's important and forget what's not |
-| **RAG Built-In** | Connect your AI to your documents and databases |
-| **Tool Framework** | Easily add new capabilities to your agents |
-| **Beginner Friendly** | Clear examples and extensive documentation |
+| Component | Description | Status |
+|-----------|-------------|--------|
+| **Flink Integration** | Leverages Flink's state management and fault tolerance | Partial |
+| **Flink Agents Integration** | Adapters for Apache Flink Agents v0.2-SNAPSHOT | Template |
+| **Context Management** | MoSCoW prioritization and intelligent compaction | Algorithm complete, state integration partial |
+| **Pluggable Storage** | Multi-tier storage architecture (in-memory, Redis, PostgreSQL) | ✅ **Production-ready** |
+| **RAG Tools** | Document ingestion and semantic search | Template implementations |
+| **Tool Framework** | Extensible tool execution system | Working |
 
-### 🔥 Apache Flink Agents Integration
+### Apache Flink Agents Integration
 
-We're prepared to integrate with **Apache Flink Agents v0.1**, the official AI agent framework from the Apache Flink community!
+Experimental integration with Apache Flink Agents (v0.2-SNAPSHOT). Requires building Flink Agents from source.
 
-**What this means:**
-- ✅ **Hybrid Architecture** - Use official Flink Agents + our innovations
-- ✅ **ReAct Agents** - Autonomous reasoning-acting loops
-- ✅ **MCP Protocol** - Standard Model Context Protocol support
-- ✅ **Better Observability** - Meta-events for enhanced monitoring
-- ✅ **Future-Proof** - Aligned with Apache Flink roadmap
+**Components:**
+- Event adapters (bidirectional conversion)
+- Tool adapters (wrapping for Flink Agents actions)
+- ReAct agent patterns
+- MCP protocol support
 
-**Current Status:** ✅ Integration COMPLETE and ready to use! See [INTEGRATION_SUCCESS.md](INTEGRATION_SUCCESS.md) for details.
+**Status:** Template implementations provided. Not production-tested. Requires Flink Agents built from source.
 
 ## 🎮 Try the Interactive Demo
 
-**NEW: Interactive demo showcasing the Flink Agents integration!**
+**Explore the Flink Agents integration with an interactive demo:**
 
 ```bash
 ./run-demo.sh
 ```
 
 **What you'll see:**
-- ✅ Real-time event conversion between frameworks
-- ✅ Tool execution via Flink Agents
-- ✅ Validation and context management in action
-- ✅ Full customer support workflow
-- ✅ Performance testing
-- ✅ Architecture visualization
+- Real-time event conversion between frameworks
+- Tool execution via Flink Agents
+- Validation and context management in action
+- Full customer support workflow example
+- Performance testing
+- Architecture visualization
 
 **Demo includes:**
 1. Order Lookup Tool Demo
-2. Refund Processing Demo
-3. Knowledge Base Search Demo
-4. Full Customer Support Workflow
+2. Refund Processing Demo (multi-attempt validation)
+3. Knowledge Base Search Demo (MoSCoW context management)
+4. Full Customer Support Workflow (end-to-end)
 5. System Status Monitoring
 6. Performance Test (100 events)
 7. Architecture Diagram
 
-See [DEMO_GUIDE.md](DEMO_GUIDE.md) for complete demo documentation.
+See [DEMO_GUIDE.md](DEMO_GUIDE.md) for details.
 
-## 🚀 5-Minute Quick Start
+## 🚀 Quick Start
 
-### Step 1: Prerequisites
+### Prerequisites
 
-You'll need three things installed:
+You'll need:
+- **Java 11 or higher** - [Download here](https://adoptium.net/)
+- **Maven 3.6+** - [Download here](https://maven.apache.org/download.cgi)
+- **Ollama** (optional for local AI) - [Download here](https://ollama.ai)
 
-1. **Java 11 or higher** - [Download here](https://adoptium.net/)
-   ```bash
-   java -version  # Should show 11 or higher
-   ```
-
-2. **Maven** - [Download here](https://maven.apache.org/download.cgi)
-   ```bash
-   mvn -version  # Should show 3.6 or higher
-   ```
-
-3. **Ollama** - [Download here](https://ollama.ai)
-   ```bash
-   ollama --version  # Should show the version
-   ```
-
-### Step 2: Start Ollama (Your Local AI)
-
-Open a terminal and run:
+### Basic Setup
 
 ```bash
-# Start Ollama in the background
-ollama serve
+# Clone the repo
+git clone <your-repo-url>
+cd Agentic-Flink
 
-# In another terminal, download the AI models
-ollama pull llama2:latest        # Language model for conversations
-ollama pull nomic-embed-text     # Embedding model for understanding text
+# Checkout the flink-agents branch for the integration
+git checkout flink-agents
+
+# Build
+mvn clean compile
+
+# Run the interactive demo
+./run-demo.sh
 ```
 
-💡 **What's happening?** Ollama is like having ChatGPT running on your own computer!
-
-### Step 3: Build the Project
+### For OpenAI Integration
 
 ```bash
-cd /Users/bengamble/Agentic-Flink
-mvn clean package
+# Set your API key
+export OPENAI_API_KEY="sk-your-key-here"
+
+# Run OpenAI demo
+mvn exec:java -Dexec.mainClass="com.ververica.flink.agent.example.OpenAIFlinkAgentsDemo"
 ```
 
-This takes about 30 seconds and creates a file you can run.
+See [OPENAI_SETUP.md](OPENAI_SETUP.md) for complete setup.
 
-### Step 4: Run Your First Agent!
+## 📚 Documentation
 
-```bash
-java -cp target/agentic-flink-1.0.0-SNAPSHOT.jar \
-  com.ververica.flink.agent.example.SimpleAgentExample
-```
+**Getting Started:**
+- [DEMO_GUIDE.md](DEMO_GUIDE.md) - Interactive demo walkthrough
+- [DEMO_QUICK_REF.md](DEMO_QUICK_REF.md) - Quick reference card
+- [OPENAI_SETUP.md](OPENAI_SETUP.md) - OpenAI integration guide
+- [STORAGE_QUICKSTART.md](STORAGE_QUICKSTART.md) - **Pluggable storage quick start** 🔥
 
-🎉 **You just ran an AI agent!** Check the output to see it:
-- Receive tasks
-- Call tools (like a calculator)
-- Validate results
-- Complete the workflow
+**Integration Details:**
+- [FLINK_AGENTS_INTEGRATION.md](FLINK_AGENTS_INTEGRATION.md) - Flink Agents integration architecture
+- [INTEGRATION_SUCCESS.md](INTEGRATION_SUCCESS.md) - Integration implementation report
 
-## 📚 What Can I Build?
+**Storage Architecture:**
+- [SESSION_DELIVERY.md](SESSION_DELIVERY.md) - Storage implementation details
+- [TEST_SUITE_DELIVERY.md](TEST_SUITE_DELIVERY.md) - Test coverage report
+- [COMPLETE_SESSION_SUMMARY.md](COMPLETE_SESSION_SUMMARY.md) - Complete delivery summary
 
-### Example 1: Customer Support Bot
+**Examples:**
+- `FlinkAgentsIntegrationExample.java` - Static integration examples
+- `InteractiveFlinkAgentsDemo.java` - Interactive demo scenarios
+- `OpenAIFlinkAgentsDemo.java` - OpenAI integration examples
+- `StorageIntegratedFlinkJob.java` - **Storage backend switching demo** 🔥
 
-```java
-// An agent that helps customers and remembers conversations
-AgentConfig config = new AgentConfig();
-config.setAgentId("customer-support-bot");
-config.setMaxIterations(5);  // Try up to 5 times to solve the problem
-
-// Give it tools
-config.addTool(new DatabaseSearchTool());     // Search customer history
-config.addTool(new EmailTool());              // Send responses
-config.addTool(new KnowledgeBaseTool());      // Look up solutions
-```
-
-### Example 2: Document Processor
-
-```java
-// An agent that reads documents and extracts information
-AgentConfig config = new AgentConfig();
-config.setAgentId("doc-processor");
-
-// It can ingest documents and search through them
-config.addTool(new DocumentIngestionTool());
-config.addTool(new SemanticSearchTool());
-config.addTool(new RagQueryTool());
-```
-
-### Example 3: Data Pipeline
-
-```java
-// An agent that processes data and makes decisions
-AgentConfig config = new AgentConfig();
-config.setAgentId("data-pipeline");
-
-// It validates data quality and takes action
-config.addTool(new DataValidationTool());
-config.addTool(new TransformationTool());
-config.addTool(new AlertingTool());
-```
-
-## 🎓 Learning Path
-
-**Start here:** → [Getting Started Guide](GETTING_STARTED.md)
-- Step-by-step setup
-- Your first agent
-- Understanding the output
-
-**Then learn:** → [Core Concepts](CONCEPTS.md)
-- What is an agent?
-- How do tools work?
-- Memory and context
-- Validation and correction
-
-**Try examples:** → [Example Walkthroughs](EXAMPLES.md)
-- Simple Agent: Basic workflow
-- RAG Agent: Work with documents
-- Context Agent: Memory management
-
-**Deep dive:** → [Framework Documentation](AGENT_FRAMEWORK.md)
-- Advanced patterns
-- Custom tools
-- Production deployment
-
-## 🔑 Core Concepts (Simple Explanations)
+## 🔑 Core Concepts
 
 ### What's an Agent?
 
-An **agent** is like a smart worker that:
+An **agent** is a program that:
 1. Gets a task (via events)
 2. Decides what tools to use
 3. Uses those tools
@@ -215,204 +149,116 @@ Task → Think → Use Tools → Check Work → Done!
 
 ### What Are Tools?
 
-**Tools** are things your agent can do:
+**Tools** are capabilities your agent can use:
 - 🔍 Search a database
 - 📧 Send an email
 - 🧮 Calculate something
 - 📄 Read a document
 - 🌐 Call an API
 
-You can easily add your own tools!
+### Context Management
 
-### What's Context Management?
+**Context management** helps agents remember what's important:
+- **MUST:** Critical information (always kept)
+- **SHOULD:** Important data (usually kept)
+- **COULD:** Nice-to-have (maybe kept)
+- **WON'T:** Temporary (discarded)
 
-Imagine your agent talking to a user. After 1000 messages, it can't remember everything. **Context management** automatically:
-- Keeps important facts (MUST)
-- Compresses useful info (SHOULD)
-- Forgets irrelevant stuff (COULD/WONT)
+### RAG (Retrieval Augmented Generation)
 
-It's like having a smart notebook that highlights important things.
-
-### What's RAG?
-
-**RAG** (Retrieval Augmented Generation) lets your AI know about YOUR data:
-
+**RAG** connects your AI to your own data:
 ```
-Your Documents → Break into chunks → Store embeddings → Search when needed
+Your Documents → Chunk → Embed → Store → Search when needed
 ```
 
-Instead of the AI just guessing, it can look up facts from your documents!
+## 🎯 Project Status
 
-## 📦 Project Structure (Explained)
+### ✅ What Works
 
-```
-Agentic-Flink/
-├── README.md                    ← You are here!
-├── GETTING_STARTED.md           ← Start your journey
-├── CONCEPTS.md                  ← Understand the framework
-├── EXAMPLES.md                  ← Learn by doing
-├── pom.xml                      ← Maven build file (you rarely touch this)
-│
-├── src/main/java/.../agent/
-│   ├── core/                    ← Basic building blocks
-│   │   ├── AgentEvent.java      ← Events that agents process
-│   │   ├── ToolDefinition.java  ← How to define a tool
-│   │   └── AgentConfig.java     ← Configure your agent
-│   │
-│   ├── tools/                   ← Where you add new tools
-│   │   ├── ToolExecutor.java    ← Base for all tools
-│   │   └── rag/                 ← Document search tools
-│   │
-│   ├── context/                 ← Memory management
-│   │   ├── core/                ← Context primitives
-│   │   ├── memory/              ← Short/long term memory
-│   │   └── compaction/          ← Automatic cleanup
-│   │
-│   ├── langchain/               ← AI model integration
-│   │   ├── client/              ← Talk to Ollama/OpenAI
-│   │   └── model/               ← Different AI models
-│   │
-│   └── example/                 ← Ready-to-run examples
-│       ├── SimpleAgentExample.java
-│       ├── RagAgentExample.java
-│       └── ContextManagementExample.java
-```
+- **Basic agent workflows** - Event-driven agents with tools
+- **Flink Agents integration** - Adapters work, can convert events and wrap tools
+- **Demo scenarios** - 7 interactive demos showing capabilities
+- **OpenAI integration** - Connect to OpenAI models
+- **Tool execution** - Extensible tool framework
+- **Event conversion** - Bidirectional, lossless conversion proven
+- **Performance** - Fast event processing (16,000+ events/sec in tests)
 
-## 🛠️ Common Tasks
+### ⚠️ Experimental / In Progress
 
-### Run Different Examples
+- **Production hardening** - Not battle-tested in production
+- **Error recovery** - Basic error handling, needs more robustness
+- **Documentation** - Good starting point, could be more comprehensive
+- **Test coverage** - Some tests exist, more needed
+- **Deployment guides** - Not yet documented
+- **Scalability testing** - Small-scale testing only
 
-```bash
-# Basic agent workflow
-java -cp target/agentic-flink-1.0.0-SNAPSHOT.jar \
-  com.ververica.flink.agent.example.SimpleAgentExample
+### 🔮 Future Ideas
 
-# Work with documents (RAG)
-java -cp target/agentic-flink-1.0.0-SNAPSHOT.jar \
-  com.ververica.flink.agent.example.RagAgentExample
+- Contribute patterns back to Apache Flink Agents
+- More comprehensive testing
+- Production deployment patterns
+- More tool integrations
+- Better observability
+- Community feedback and iteration
 
-# Memory management
-java -cp target/agentic-flink-1.0.0-SNAPSHOT.jar \
-  com.ververica.flink.agent.example.ContextManagementExample
-```
+## 🤝 Contributing
 
-### Change the AI Model
+This is a personal learning project, but feedback and ideas are welcome!
 
-Edit the example file and change:
-
-```java
-LLMConfig config = new LLMConfig();
-config.setAiModel(AiModel.OLLAMA);  // or AiModel.OPENAI
-
-Map<String, String> properties = new HashMap<>();
-properties.put("modelName", "llama2:latest");  // Change model here
-```
-
-### Add Your Own Tool
-
-1. Create a new class extending `AbstractToolExecutor`
-2. Implement the `execute()` method
-3. Register it with your agent
-
-Example:
-
-```java
-public class MyCustomTool extends AbstractToolExecutor {
-    @Override
-    public CompletableFuture<Object> execute(Map<String, Object> params) {
-        // Do your work here
-        String input = getRequiredParameter(params, "input");
-        String result = processInput(input);
-        return CompletableFuture.completedFuture(result);
-    }
-}
-```
-
-## ❓ Frequently Asked Questions
-
-### Do I need to know Apache Flink?
-
-**No!** The framework handles all the Flink complexity. You just write agent logic.
-
-### Do I need expensive AI APIs?
-
-**No!** Use Ollama to run AI models locally for free.
-
-### Can I use this in production?
-
-**Yes!** Built on Apache Flink, it's production-ready with:
-- Exactly-once processing guarantees
-- Automatic scaling
-- Failure recovery
-- State management
-
-### How do I debug issues?
-
-Check the logs! They show each step:
-```
-[INFO] Agent agent-001: Received event type=TOOL_CALL_REQUESTED
-[INFO] Agent agent-001: Executing tool=calculator
-[INFO] Agent agent-001: Validation passed
-[INFO] Agent agent-001: Flow completed
-```
-
-### Can I connect to my database?
-
-**Yes!** Create a tool that connects to your database:
-
-```java
-public class DatabaseTool extends AbstractToolExecutor {
-    @Override
-    public CompletableFuture<Object> execute(Map<String, Object> params) {
-        String query = getRequiredParameter(params, "query");
-        // Connect to your database and execute query
-        return CompletableFuture.completedFuture(results);
-    }
-}
-```
-
-## 🎯 Next Steps
-
-1. **Run the examples** - See what's possible
-2. **Read [Getting Started](GETTING_STARTED.md)** - Build your first agent
-3. **Understand [Concepts](CONCEPTS.md)** - Learn how it works
-4. **Try [Examples](EXAMPLES.md)** - Learn by doing
-5. **Create your own agent** - Build something amazing!
-
-## 🆘 Need Help?
-
-- 📖 **Read the docs** - Start with [Getting Started](GETTING_STARTED.md)
-- 🔍 **Check [Troubleshooting](TROUBLESHOOTING.md)** - Common issues and fixes
-- 💡 **Look at examples** - See [EXAMPLES.md](EXAMPLES.md)
-- 🐛 **Something broken?** - Check the logs, they're very detailed
-
-## 🌟 What Makes This Special?
-
-| Other Frameworks | Agentic Flink |
-|------------------|---------------|
-| Run on one machine | Scale to thousands of machines |
-| Lose data on crash | Never lose data (Flink guarantees) |
-| Complex setup | Simple examples to start |
-| Manual memory management | Automatic context management |
-| Build from scratch | RAG and tools included |
+- Open issues for bugs or suggestions
+- Share your experiments
+- Suggest improvements
+- Help with documentation
 
 ## 📝 License
 
-Apache License 2.0 - Use it freely!
+Apache License 2.0 - Use freely, but no warranties provided.
 
-## 🚀 Ready to Build?
+## 👤 Author
+
+**Ben Gamble**
+- Exploring AI agents + stream processing
+- Experimenting with Apache Flink patterns
+- Learning in public
+
+## 🙏 Acknowledgments
+
+- Apache Flink community for the amazing streaming framework
+- Apache Flink Agents team for the official agent framework
+- LangChain4J for LLM integration
+- Everyone sharing knowledge about AI agents
+
+## ⚠️ Important Notes
+
+**This is experimental software:**
+- Not tested in production environments
+- APIs may change
+- Use at your own risk
+- Great for learning and experimentation
+- Not recommended for critical systems yet
+
+**Security:**
+- Never commit API keys to git
+- Use environment variables for secrets
+- Review code before using in any production-like environment
+
+## 🚀 Get Started
 
 ```bash
-# Start here
-cd /Users/bengamble/Agentic-Flink
-mvn clean package
+# Try the demo
+./run-demo.sh
 
-# Run your first agent
-java -cp target/agentic-flink-1.0.0-SNAPSHOT.jar \
-  com.ververica.flink.agent.example.SimpleAgentExample
+# Read the guides
+cat DEMO_GUIDE.md
 
-# Then read the getting started guide
-open GETTING_STARTED.md
+# Explore the code
+ls src/main/java/com/ververica/flink/agent/
+
+# Experiment and learn!
 ```
 
-**Welcome to the world of scalable AI agents!** 🎉
+---
+
+**Built with curiosity and Apache Flink** 🚀
+
+Questions? Open an issue or reach out!
