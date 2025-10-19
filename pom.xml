@@ -188,6 +188,13 @@
             <version>5.0.1</version>
         </dependency>
 
+        <!-- Reflections for @Tool annotation scanning -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -222,6 +229,9 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 

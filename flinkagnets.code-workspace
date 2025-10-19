@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../ververica-ai-starter-kit"
+		},
+		{
+			"path": "../ververica-distributed-saga"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

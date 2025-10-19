@@ -3,6 +3,8 @@ package com.ververica.flink.agent.function;
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.core.ToolDefinition;
+import com.ververica.flink.agent.langchain.LangChainToolAdapter;
+import com.ververica.flink.agent.langchain.ToolAnnotationRegistry;
 import com.ververica.flink.agent.serde.ToolCallRequest;
 import com.ververica.flink.agent.serde.ToolCallResponse;
 import com.ververica.flink.agent.langchain.client.LangChainAsyncClient;
@@ -11,6 +13,7 @@ import com.ververica.flink.agent.langchain.model.language.LangChainLanguageModel
 import com.ververica.flink.agent.langchain.model.language.OllamaLanguageModel;
 import com.ververica.flink.agent.langchain.model.language.OpenAiLanguageModel;
 import com.ververica.flink.agent.langchain.config.LLMConfig;
+import com.ververica.flink.agent.tools.ToolExecutor;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
@@ -33,9 +36,27 @@ public class ToolCallAsyncFunction extends RichAsyncFunction<ToolCallRequest, To
 
   private transient LangChainAsyncClient langChainAsyncClient;
   private final Map<String, ToolDefinition> toolRegistry;
+  private final ToolAnnotationRegistry annotationRegistry;
 
+  /**
+   * Creates a ToolCallAsyncFunction with only a manual tool registry.
+   *
+   * @param toolRegistry Map of manually registered tools
+   */
   public ToolCallAsyncFunction(Map<String, ToolDefinition> toolRegistry) {
+    this(toolRegistry, null);
+  }
+
+  /**
+   * Creates a ToolCallAsyncFunction with both manual and annotation-based registries.
+   *
+   * @param toolRegistry Map of manually registered tools
+   * @param annotationRegistry Registry of @Tool annotated methods (can be null)
+   */
+  public ToolCallAsyncFunction(
+      Map<String, ToolDefinition> toolRegistry, ToolAnnotationRegistry annotationRegistry) {
     this.toolRegistry = toolRegistry;
+    this.annotationRegistry = annotationRegistry;
   }
 
   @Override
@@ -56,8 +77,9 @@ public class ToolCallAsyncFunction extends RichAsyncFunction<ToolCallRequest, To
     LOG.info(
         "Executing tool call for flow {}, tool: {}", request.getFlowId(), request.getToolId());
 
-    // Get tool definition
-    ToolDefinition toolDef = toolRegistry.get(request.getToolId());
+    // Try to get tool definition from annotation registry first, then manual registry
+    ToolDefinition toolDef = findToolDefinition(request.getToolId());
+
     if (toolDef == null) {
       ToolCallResponse response = new ToolCallResponse();
       response.setRequestId(request.getRequestId());
@@ -69,6 +91,115 @@ public class ToolCallAsyncFunction extends RichAsyncFunction<ToolCallRequest, To
       resultFuture.complete(Collections.singleton(response));
       return;
     }
+
+    // Check if this is an annotation-based tool (has LangChainToolAdapter executor)
+    if (isAnnotationBasedTool(toolDef)) {
+      executeAnnotationBasedTool(request, toolDef, resultFuture);
+    } else {
+      // Fall back to LLM-based execution for legacy tools
+      executeLLMBasedTool(request, toolDef, resultFuture);
+    }
+  }
+
+  /**
+   * Finds a tool definition, checking annotation registry first, then manual registry.
+   *
+   * @param toolId The tool ID to find
+   * @return ToolDefinition or null if not found
+   */
+  private ToolDefinition findToolDefinition(String toolId) {
+    // Check annotation registry first
+    if (annotationRegistry != null && annotationRegistry.hasTool(toolId)) {
+      return annotationRegistry.getToolDefinition(toolId);
+    }
+
+    // Fall back to manual registry
+    return toolRegistry.get(toolId);
+  }
+
+  /**
+   * Checks if a tool is annotation-based (uses LangChainToolAdapter).
+   *
+   * @param toolDef The tool definition
+   * @return true if annotation-based
+   */
+  private boolean isAnnotationBasedTool(ToolDefinition toolDef) {
+    String executorClass = toolDef.getExecutorClass();
+    return executorClass != null
+        && executorClass.contains("LangChainToolAdapter");
+  }
+
+  /**
+   * Executes a @Tool annotated method directly.
+   *
+   * @param request The tool call request
+   * @param toolDef The tool definition
+   * @param resultFuture The result future to complete
+   */
+  private void executeAnnotationBasedTool(
+      ToolCallRequest request, ToolDefinition toolDef, ResultFuture<ToolCallResponse> resultFuture) {
+
+    LOG.info("Executing @Tool annotated method for: {}", request.getToolId());
+
+    try {
+      // Create adapter and execute
+      ToolExecutor executor = new LangChainToolAdapter(request.getToolId(), annotationRegistry);
+
+      // Validate parameters
+      if (!executor.validateParameters(request.getParameters())) {
+        ToolCallResponse response = createErrorResponse(request, toolDef,
+            "Invalid parameters", "INVALID_PARAMETERS");
+        resultFuture.complete(Collections.singleton(response));
+        return;
+      }
+
+      // Execute async
+      CompletableFuture<Object> executionFuture = executor.execute(request.getParameters());
+
+      // Process result
+      executionFuture.whenComplete(
+          (result, throwable) -> {
+            ToolCallResponse response = createToolCallResponse(request, toolDef);
+
+            if (throwable != null) {
+              LOG.error(
+                  "Annotation-based tool execution failed for flow {}, tool: {}",
+                  request.getFlowId(),
+                  request.getToolId(),
+                  throwable);
+              response.fail(throwable.getMessage(), "EXECUTION_ERROR");
+            } else {
+              // Convert result to string
+              String resultStr = result != null ? result.toString() : "null";
+              response.complete(resultStr);
+              LOG.info(
+                  "Annotation-based tool execution completed for flow {}, tool: {}",
+                  request.getFlowId(),
+                  request.getToolId());
+            }
+
+            resultFuture.complete(Collections.singleton(response));
+          });
+
+    } catch (Exception e) {
+      LOG.error("Failed to create tool adapter for: {}", request.getToolId(), e);
+      ToolCallResponse response = createErrorResponse(request, toolDef,
+          "Tool adapter creation failed: " + e.getMessage(), "ADAPTER_ERROR");
+      resultFuture.complete(Collections.singleton(response));
+    }
+  }
+
+  /**
+   * Executes a tool using LLM-based execution (legacy approach).
+   *
+   * @param request The tool call request
+   * @param toolDef The tool definition
+   * @param resultFuture The result future to complete
+   */
+  private void executeLLMBasedTool(
+      ToolCallRequest request, ToolDefinition toolDef, ResultFuture<ToolCallResponse> resultFuture) {
+
+    LOG.info("Executing LLM-based tool for: {}", request.getToolId());
 
     // Build prompt for tool execution
     String toolPrompt = buildToolExecutionPrompt(toolDef, request.getParameters());
@@ -83,6 +214,40 @@ public class ToolCallAsyncFunction extends RichAsyncFunction<ToolCallRequest, To
         langChainAsyncClient.generate(messages, llmConfig);
 
     processAsyncResponse(request, toolDef, resultFuture, asyncResponse);
+  }
+
+  /**
+   * Creates a ToolCallResponse with common fields populated.
+   *
+   * @param request The request
+   * @param toolDef The tool definition
+   * @return A new ToolCallResponse
+   */
+  private ToolCallResponse createToolCallResponse(ToolCallRequest request, ToolDefinition toolDef) {
+    ToolCallResponse response = new ToolCallResponse(
+        request.getRequestId(),
+        request.getFlowId(),
+        request.getUserId(),
+        request.getAgentId());
+    response.setToolId(request.getToolId());
+    response.setToolName(toolDef.getName());
+    return response;
+  }
+
+  /**
+   * Creates an error response.
+   *
+   * @param request The request
+   * @param toolDef The tool definition
+   * @param errorMessage The error message
+   * @param errorCode The error code
+   * @return A new ToolCallResponse with error
+   */
+  private ToolCallResponse createErrorResponse(
+      ToolCallRequest request, ToolDefinition toolDef, String errorMessage, String errorCode) {
+    ToolCallResponse response = createToolCallResponse(request, toolDef);
+    response.fail(errorMessage, errorCode);
+    return response;
   }
 
   @Override

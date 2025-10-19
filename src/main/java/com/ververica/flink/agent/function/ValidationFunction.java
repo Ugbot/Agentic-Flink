@@ -2,6 +2,7 @@ package com.ververica.flink.agent.function;
 
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
+import com.ververica.flink.agent.langchain.PromptTemplateManager;
 import com.ververica.flink.agent.serde.ValidationResult;
 import com.ververica.flink.agent.langchain.client.LangChainAsyncClient;
 import com.ververica.flink.agent.langchain.model.AiModel;
@@ -12,6 +13,7 @@ import com.ververica.flink.agent.langchain.config.LLMConfig;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.output.Response;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,15 +31,23 @@ public class ValidationFunction extends RichAsyncFunction<AgentEvent, AgentEvent
   public static final String UID = ValidationFunction.class.getSimpleName();
 
   private transient LangChainAsyncClient langChainAsyncClient;
-  private final String validationPromptTemplate;
+  private transient PromptTemplateManager promptManager;
+  private final String customTemplateId;
 
-  public ValidationFunction(String validationPromptTemplate) {
-    this.validationPromptTemplate =
-        validationPromptTemplate != null
-            ? validationPromptTemplate
-            : "Validate the following tool execution result:\n\nResult: {{result}}\n\n"
-                + "Check if the result is correct, complete, and properly formatted. "
-                + "Respond with 'VALID' if it passes validation, or 'INVALID' with reasons if it fails.";
+  /**
+   * Creates a ValidationFunction using the default validation template.
+   */
+  public ValidationFunction() {
+    this(null);
+  }
+
+  /**
+   * Creates a ValidationFunction with a custom template ID.
+   *
+   * @param customTemplateId Custom template ID (null to use default "validation" template)
+   */
+  public ValidationFunction(String customTemplateId) {
+    this.customTemplateId = customTemplateId;
   }
 
   @Override
@@ -49,6 +59,7 @@ public class ValidationFunction extends RichAsyncFunction<AgentEvent, AgentEvent
                 LangChainLanguageModel.DEFAULT_MODEL,
                 new OllamaLanguageModel(),
                 new OpenAiLanguageModel()));
+    this.promptManager = PromptTemplateManager.getInstance();
   }
 
   @Override
@@ -66,11 +77,12 @@ public class ValidationFunction extends RichAsyncFunction<AgentEvent, AgentEvent
       return;
     }
 
-    // Build validation prompt
-    String validationPrompt =
-        validationPromptTemplate.replace("{{result}}", toolResult.toString());
+    // Build validation prompt using PromptTemplateManager
+    String templateId = customTemplateId != null ? customTemplateId : "validation";
+    Prompt validationPrompt = promptManager.renderTemplate(templateId, "result", toolResult);
+
     List<ChatMessage> messages = new ArrayList<>();
-    messages.add(new UserMessage(validationPrompt));
+    messages.add(new UserMessage(validationPrompt.text()));
 
     // Create LLM config
     LLMConfig llmConfig = createLLMConfig(event);

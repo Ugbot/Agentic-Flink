@@ -2,6 +2,7 @@ package com.ververica.flink.agent.function;
 
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
+import com.ververica.flink.agent.langchain.PromptTemplateManager;
 import com.ververica.flink.agent.serde.ValidationResult;
 import com.ververica.flink.agent.langchain.client.LangChainAsyncClient;
 import com.ververica.flink.agent.langchain.model.AiModel;
@@ -12,7 +13,10 @@ import com.ververica.flink.agent.langchain.config.LLMConfig;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.output.Response;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,17 +33,27 @@ public class CorrectionFunction extends RichAsyncFunction<AgentEvent, AgentEvent
   public static final String UID = CorrectionFunction.class.getSimpleName();
 
   private transient LangChainAsyncClient langChainAsyncClient;
-  private final String correctionPromptTemplate;
+  private transient PromptTemplateManager promptManager;
+  private final String customTemplateId;
   private final int maxCorrectionAttempts;
 
-  public CorrectionFunction(String correctionPromptTemplate, int maxCorrectionAttempts) {
-    this.correctionPromptTemplate =
-        correctionPromptTemplate != null
-            ? correctionPromptTemplate
-            : "The following result failed validation:\n\n"
-                + "Original Result: {{result}}\n"
-                + "Validation Errors: {{errors}}\n\n"
-                + "Please correct the result to address these errors.";
+  /**
+   * Creates a CorrectionFunction with default template and max attempts.
+   *
+   * @param maxCorrectionAttempts Maximum number of correction attempts
+   */
+  public CorrectionFunction(int maxCorrectionAttempts) {
+    this(null, maxCorrectionAttempts);
+  }
+
+  /**
+   * Creates a CorrectionFunction with custom template.
+   *
+   * @param customTemplateId Custom template ID (null to use default "correction" template)
+   * @param maxCorrectionAttempts Maximum number of correction attempts
+   */
+  public CorrectionFunction(String customTemplateId, int maxCorrectionAttempts) {
+    this.customTemplateId = customTemplateId;
     this.maxCorrectionAttempts = maxCorrectionAttempts;
   }
 
@@ -52,6 +66,7 @@ public class CorrectionFunction extends RichAsyncFunction<AgentEvent, AgentEvent
                 LangChainLanguageModel.DEFAULT_MODEL,
                 new OllamaLanguageModel(),
                 new OpenAiLanguageModel()));
+    this.promptManager = PromptTemplateManager.getInstance();
   }
 
   @Override
@@ -78,16 +93,16 @@ public class CorrectionFunction extends RichAsyncFunction<AgentEvent, AgentEvent
     ValidationResult validation = event.getData("validationResult", ValidationResult.class);
     Object originalResult = event.getData("originalResult");
 
-    // Build correction prompt
-    String correctionPrompt =
-        correctionPromptTemplate
-            .replace("{{result}}", originalResult != null ? originalResult.toString() : "")
-            .replace(
-                "{{errors}}",
-                validation != null ? String.join(", ", validation.getErrors()) : "Unknown errors");
+    // Build correction prompt using PromptTemplateManager
+    String templateId = customTemplateId != null ? customTemplateId : "correction";
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("result", originalResult != null ? originalResult.toString() : "");
+    variables.put("errors", validation != null ? String.join(", ", validation.getErrors()) : "Unknown errors");
+
+    Prompt correctionPrompt = promptManager.renderTemplate(templateId, variables);
 
     List<ChatMessage> messages = new ArrayList<>();
-    messages.add(new UserMessage(correctionPrompt));
+    messages.add(new UserMessage(correctionPrompt.text()));
 
     // Create LLM config
     LLMConfig llmConfig = createLLMConfig(event);

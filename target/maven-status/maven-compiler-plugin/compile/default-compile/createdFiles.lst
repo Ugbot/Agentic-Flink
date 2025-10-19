@@ -7,11 +7,13 @@ com/ververica/flink/agent/function/CorrectionFunction.class
 com/ververica/flink/agent/serde/ControlCommandType.class
 com/ververica/flink/agent/example/FlinkAgentsIntegrationExample.class
 com/ververica/flink/agent/example/StorageIntegratedFlinkJob.class
+com/ververica/flink/agent/langchain/LangChainToolAdapter.class
 com/ververica/flink/agent/storage/config/StorageConfiguration$TierConfiguration.class
 com/ververica/flink/agent/function/ToolCallAsyncFunction.class
 com/ververica/flink/agent/flintagents/adapter/FlinkAgentsToolAdapter$RagToolsIntegrationExample.class
 com/ververica/flink/agent/function/ValidationFunction.class
 com/ververica/flink/agent/langchain/client/LangChainEmbeddingAsyncClient.class
+com/ververica/flink/agent/tools/builtin/CalculatorTools.class
 com/ververica/flink/agent/tools/rag/EmbeddingToolExecutor.class
 com/ververica/flink/agent/context/core/AgentContext.class
 com/ververica/flink/agent/context/compaction/CompactionRequest$CompactionReason.class
@@ -28,6 +30,7 @@ com/ververica/flink/agent/flintagents/action/ContextManagementActionWithStorage.
 com/ververica/flink/agent/context/core/MemoryType.class
 com/ververica/flink/agent/storage/SteeringStateStore.class
 com/ververica/flink/agent/pattern/AgentPatternName.class
+com/ververica/flink/agent/tools/builtin/StringTools.class
 com/ververica/flink/agent/langchain/store/QdrantEmbeddingStore.class
 com/ververica/flink/agent/example/ContextManagementExample.class
 com/ververica/flink/agent/serde/ValidationResult.class
@@ -45,6 +48,7 @@ com/ververica/flink/agent/storage/StorageTier.class
 com/ververica/flink/agent/flintagents/adapter/FlinkAgentsEventAdapter$1.class
 com/ververica/flink/agent/context/relevancy/RelevancyScorer.class
 com/ververica/flink/agent/storage/VectorStore$VectorSearchResult.class
+com/ververica/flink/agent/example/ToolAnnotationExample.class
 com/ververica/flink/agent/example/InteractiveFlinkAgentsDemo.class
 com/ververica/flink/agent/example/StorageIntegratedFlinkJob$ConversationEventSource.class
 com/ververica/flink/agent/tools/ToolExecutor.class
@@ -118,5 +122,6 @@ com/ververica/flink/agent/serde/ToolAllowlistAction.class
 com/ververica/flink/agent/example/PluggableStorageExample.class
 com/ververica/flink/agent/context/core/ContextWindow.class
 com/ververica/flink/agent/storage/StorageFactory.class
+com/ververica/flink/agent/langchain/ToolAnnotationRegistry.class
 com/ververica/flink/agent/tools/rag/SemanticSearchToolExecutor.class
 com/ververica/flink/agent/core/AgentEvent.class
