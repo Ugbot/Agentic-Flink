@@ -47,47 +47,23 @@
         </dependency>
 
         <!--
-        Apache Flink Agents - Event-Driven AI Agent Framework
+        Apache Flink Agents - OPTIONAL Plugin (Experimental)
 
-        NOTE: Flink Agents v0.1.0 was just released and artifacts may not yet be in Maven Central.
-        Once available, uncomment the dependencies below.
+        NOTE: This is an OPTIONAL dependency for the Flink Agents plugin.
+        The core framework works WITHOUT these dependencies.
 
-        To build from source:
-        1. git clone https://github.com/apache/flink-agents.git
-        2. cd flink-agents
-        3. ./tools/build.sh
-        4. Install to local Maven repo: mvn install -DskipTests
+        To enable Flink Agents plugin:
+        1. Build Flink Agents from source (still in SNAPSHOT):
+           git clone https://github.com/apache/flink-agents.git
+           cd flink-agents && ./tools/build.sh && mvn install -DskipTests
 
-        For updates, check: https://nightlies.apache.org/flink/flink-agents-docs-release-0.1/
+        2. Build this project with the flink-agents profile:
+           mvn clean package -P flink-agents
+
+        See: src/main/java/com/ververica/flink/agent/plugins/flintagents/README.md
         -->
 
-        <!-- Flink Agents API - Built from source and installed locally -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-agents-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Flink Agents Plan - Workflow agent support -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-agents-plan</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Flink Agents Runtime - Agent execution runtime -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-agents-runtime</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
-
-        <!-- Flink Agents Ollama Integration - LLM support -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-agents-integrations-chat-models-ollama</artifactId>
-            <version>0.2-SNAPSHOT</version>
-        </dependency>
+        <!-- Flink Agents dependencies are in the 'flink-agents' profile below -->
 
         <!-- LangChain4J Core -->
         <dependency>
@@ -232,6 +208,10 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
+                    <!-- Exclude Flink Agents plugin by default -->
+                    <excludes>
+                        <exclude>**/plugins/flintagents/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
@@ -322,4 +302,63 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <profiles>
+        <!-- Optional Flink Agents Plugin Profile -->
+        <profile>
+            <id>flink-agents</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <!-- Flink Agents API - Built from source and installed locally -->
+                <dependency>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>flink-agents-api</artifactId>
+                    <version>0.2-SNAPSHOT</version>
+                </dependency>
+
+                <!-- Flink Agents Plan - Workflow agent support -->
+                <dependency>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>flink-agents-plan</artifactId>
+                    <version>0.2-SNAPSHOT</version>
+                </dependency>
+
+                <!-- Flink Agents Runtime - Agent execution runtime -->
+                <dependency>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>flink-agents-runtime</artifactId>
+                    <version>0.2-SNAPSHOT</version>
+                </dependency>
+
+                <!-- Flink Agents Ollama Integration - LLM support -->
+                <dependency>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>flink-agents-integrations-chat-models-ollama</artifactId>
+                    <version>0.2-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.11.0</version>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                            <compilerArgs>
+                                <arg>-parameters</arg>
+                            </compilerArgs>
+                            <!-- Include Flink Agents plugin when profile is active -->
+                            <excludes>
+                                <exclude>NOTHING_TO_EXCLUDE</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.ververica.flink.agent.storage.redis.RedisShortTermStoreTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 5, Time elapsed: 0 s -- in com.ververica.flink.agent.storage.redis.RedisShortTermStoreTest

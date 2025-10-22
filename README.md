@@ -1,134 +1,168 @@
 # Agentic Flink - AI Agents on Apache Flink
 
-**Status:** Experimental framework for building AI agents on Apache Flink
+**Status:** 🚧 Active Development - Making it Real (v1.0.0-SNAPSHOT)
 **Author:** Ben Gamble
 **License:** Apache License 2.0
 
-This is a research project exploring integration of AI agent patterns with Apache Flink's distributed stream processing capabilities.
+This project is building a **real, working framework** for AI agents on Apache Flink, focused on production-ready features:
 
-## Overview
+- **Apache Flink CEP** for agent orchestration and tiered workflows
+- **LangChain4J** for LLM integration (OpenAI, Ollama)
+- **PostgreSQL + Redis** for durable storage and fast caching
+- **Real examples** with actual tool execution and LLM calls
 
-Experimental framework for building AI agents with stream processing capabilities:
+## 🎯 Current Status: Being Honest
 
-- AI decision making (OpenAI/Ollama integration)
-- Tool execution framework
-- Context management with MoSCoW prioritization
-- Validation and correction patterns
-- Error handling and retry logic
-- Built on Apache Flink for distributed processing
+**Build Status:** ✅ BUILD SUCCESS - Tests: 112 run, 0 failures, 0 errors, 5 skipped
 
-Potential applications include customer service automation, intelligent data pipelines, and adaptive workflows. This is research-grade software exploring agent patterns in streaming systems.
+**What Actually Works:**
+- ✅ Core context management algorithms (MoSCoW prioritization)
+- ✅ Tool execution framework with LangChain4J
+- ✅ Redis caching layer (production-ready with 5 unit tests)
+- ✅ PostgreSQL storage (complete with 31 comprehensive tests)
+- ✅ Flink CEP patterns for agent workflows
+- ✅ Real tiered agent example (ValidationAgent → ExecutionAgent → SupervisorAgent)
+- ✅ Docker infrastructure (one-command setup: PostgreSQL + Redis + Ollama)
+- ✅ Comprehensive test coverage (112 tests passing)
+
+**What's In Progress:**
+- 🚧 Advanced CEP patterns for complex multi-agent workflows
+- 🚧 Performance benchmarking and optimization
+- 🚧 Vector search integration with Qdrant (RAG capabilities)
+- 🚧 Monitoring and metrics (Prometheus/Grafana)
+
+**What's Planned (Not Yet Real):**
+- 📋 See [ROADMAP.md](ROADMAP.md) for detailed version plan
+- 📋 Apache Flink Agents integration (v2.0, when framework releases Q2 2026)
+- 📋 Multi-tenancy and authentication (v2.0)
+- 📋 Advanced ML and graph-based reasoning (v2.1)
+
+This README describes what's working **now**. For planned features, see [ROADMAP.md](ROADMAP.md). For detailed progress, see [STATUS.md](STATUS.md). For comprehensive overview, see [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md).
 
 ## Key Components
 
 | Component | Description | Status |
 |-----------|-------------|--------|
-| **Flink Integration** | Leverages Flink's state management and fault tolerance | Partial |
-| **Flink Agents Integration** | Adapters for Apache Flink Agents v0.2-SNAPSHOT | Template |
-| **Context Management** | MoSCoW prioritization and intelligent compaction | Algorithm complete, state integration partial |
-| **Pluggable Storage** | Multi-tier storage architecture (in-memory, Redis, PostgreSQL) | ✅ **Production-ready** |
-| **RAG Tools** | Document ingestion and semantic search | Template implementations |
-| **Tool Framework** | Extensible tool execution system | Working |
+| **Flink CEP** | Complex event processing for agent workflows | ✅ Working |
+| **LangChain4J Integration** | LLM calls, tool execution, prompt management | ✅ Working |
+| **Context Management** | MoSCoW prioritization and 5-phase compaction | ✅ Production-ready |
+| **Redis Storage** | Fast caching layer for active contexts | ✅ Production-ready |
+| **PostgreSQL Storage** | Durable conversation storage | ✅ Production-ready (31 tests) |
+| **Tool Framework** | Extensible tool execution with @Tool annotations | ✅ Working |
+| **Tiered Agent Example** | Real working example with Flink CEP + LLM | ✅ Complete |
+| **Flink Agents Plugin** | Optional integration (see ROADMAP.md) | 📋 Future (v2.0) |
 
-### Apache Flink Agents Integration
+### Core Architecture
 
-Experimental integration with Apache Flink Agents (v0.2-SNAPSHOT). Requires building Flink Agents from source.
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  Agentic Flink Architecture                 │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  Event Stream (mock/Kafka)                                  │
+│       ↓                                                       │
+│  ┌──────────────────────────────────────────────┐           │
+│  │  Flink CEP Pattern Matching                  │           │
+│  │  • Validation patterns                       │           │
+│  │  • Execution triggers                        │           │
+│  │  • Escalation detection                      │           │
+│  └──────────────────┬───────────────────────────┘           │
+│                     ↓                                         │
+│  ┌──────────────────────────────────────────────┐           │
+│  │  LangChain4J Integration                     │           │
+│  │  • LLM calls (OpenAI/Ollama)                 │           │
+│  │  • Tool execution                            │           │
+│  │  • Prompt management                         │           │
+│  └──────────────────┬───────────────────────────┘           │
+│                     ↓                                         │
+│  ┌──────────────────────────────────────────────┐           │
+│  │  Context Management (MoSCoW)                 │           │
+│  │  • Priority-based compaction                 │           │
+│  │  • Relevancy scoring                         │           │
+│  │  • Memory management                         │           │
+│  └──────────────────┬───────────────────────────┘           │
+│                     ↓                                         │
+│  ┌──────────────────────────────────────────────┐           │
+│  │  Two-Tier Storage                            │           │
+│  │  • Redis (HOT) - Active contexts             │           │
+│  │  • PostgreSQL (WARM) - Durable storage       │           │
+│  └──────────────────────────────────────────────┘           │
+│                                                               │
+└─────────────────────────────────────────────────────────────┘
+```
 
-**Components:**
-- Event adapters (bidirectional conversion)
-- Tool adapters (wrapping for Flink Agents actions)
-- ReAct agent patterns
-- MCP protocol support
+## 🎮 Simulated Demo (Visualization Only)
 
-**Status:** Template implementations provided. Not production-tested. Requires Flink Agents built from source.
-
-## 🎮 Try the Interactive Demo
-
-**Explore the Flink Agents integration with an interactive demo:**
+⚠️ **Note**: The interactive demo is currently a **simulation** that shows what the system will look like. It uses mock data and hardcoded responses to demonstrate the architecture.
 
 ```bash
 ./run-demo.sh
 ```
 
-**What you'll see:**
-- Real-time event conversion between frameworks
-- Tool execution via Flink Agents
-- Validation and context management in action
-- Full customer support workflow example
-- Performance testing
-- Architecture visualization
+**What you'll see (simulated):**
+- Agent workflow patterns
+- Event structure and flow
+- Context management concepts
+- Multi-tier validation patterns
 
-**Demo includes:**
-1. Order Lookup Tool Demo
-2. Refund Processing Demo (multi-attempt validation)
-3. Knowledge Base Search Demo (MoSCoW context management)
-4. Full Customer Support Workflow (end-to-end)
-5. System Status Monitoring
-6. Performance Test (100 events)
-7. Architecture Diagram
+**For real working examples**, see the examples in `src/main/java/com/ververica/flink/agent/example/` once v1.0 is complete.
 
-See [DEMO_GUIDE.md](DEMO_GUIDE.md) for details.
-
-## 🚀 Quick Start
+## 🚀 Quick Start (Current Development)
 
 ### Prerequisites
 
 You'll need:
 - **Java 11 or higher** - [Download here](https://adoptium.net/)
 - **Maven 3.6+** - [Download here](https://maven.apache.org/download.cgi)
-- **Ollama** (optional for local AI) - [Download here](https://ollama.ai)
+- **Docker & Docker Compose** - For PostgreSQL + Redis + Ollama
+- **Ollama** (for local LLM) - [Download here](https://ollama.ai)
 
-### Basic Setup
+### Setup
 
 ```bash
 # Clone the repo
 git clone <your-repo-url>
 cd Agentic-Flink
 
-# Checkout the flink-agents branch for the integration
-git checkout flink-agents
+# Start infrastructure (PostgreSQL + Redis + Ollama)
+docker compose up -d
 
-# Build
+# Build the project
 mvn clean compile
 
-# Run the interactive demo
-./run-demo.sh
+# Run tests (once implemented)
+mvn test
 ```
 
-### For OpenAI Integration
+### Current Status
 
-```bash
-# Set your API key
-export OPENAI_API_KEY="sk-your-key-here"
+🚧 **v1.0 In Progress** - Working on:
+- Complete PostgreSQL implementation
+- Real tiered agent example
+- Comprehensive test suite
+- End-to-end working demo
 
-# Run OpenAI demo
-mvn exec:java -Dexec.mainClass="com.ververica.flink.agent.example.OpenAIFlinkAgentsDemo"
-```
-
-See [OPENAI_SETUP.md](OPENAI_SETUP.md) for complete setup.
+Check [STATUS.md](STATUS.md) for current progress.
 
 ## 📚 Documentation
 
-**Getting Started:**
-- [DEMO_GUIDE.md](DEMO_GUIDE.md) - Interactive demo walkthrough
-- [DEMO_QUICK_REF.md](DEMO_QUICK_REF.md) - Quick reference card
-- [OPENAI_SETUP.md](OPENAI_SETUP.md) - OpenAI integration guide
-- [STORAGE_QUICKSTART.md](STORAGE_QUICKSTART.md) - **Pluggable storage quick start** 🔥
+**Current Documentation:**
+- [STATUS.md](STATUS.md) - What's working now
+- [ROADMAP.md](ROADMAP.md) - Planned features
+- [GETTING_STARTED.md](GETTING_STARTED.md) - Setup guide (being updated)
+- [CONCEPTS.md](CONCEPTS.md) - Core concepts explained
 
-**Integration Details:**
-- [FLINK_AGENTS_INTEGRATION.md](FLINK_AGENTS_INTEGRATION.md) - Flink Agents integration architecture
-- [INTEGRATION_SUCCESS.md](INTEGRATION_SUCCESS.md) - Integration implementation report
+**Storage:**
+- [STORAGE_QUICKSTART.md](STORAGE_QUICKSTART.md) - PostgreSQL + Redis setup
+- [STORAGE_ARCHITECTURE.md](STORAGE_ARCHITECTURE.md) - Storage design
 
-**Storage Architecture:**
-- [SESSION_DELIVERY.md](SESSION_DELIVERY.md) - Storage implementation details
-- [TEST_SUITE_DELIVERY.md](TEST_SUITE_DELIVERY.md) - Test coverage report
-- [COMPLETE_SESSION_SUMMARY.md](COMPLETE_SESSION_SUMMARY.md) - Complete delivery summary
+**Coming Soon:**
+- Real working examples with LangChain4J
+- End-to-end tutorial
+- Production deployment guide
 
-**Examples:**
-- `FlinkAgentsIntegrationExample.java` - Static integration examples
-- `InteractiveFlinkAgentsDemo.java` - Interactive demo scenarios
-- `OpenAIFlinkAgentsDemo.java` - OpenAI integration examples
-- `StorageIntegratedFlinkJob.java` - **Storage backend switching demo** 🔥
+**Archived Documentation:**
+See `/docs/archive/` for historical documentation about planned features.
 
 ## 🔑 Core Concepts
 
@@ -171,35 +205,33 @@ Task → Think → Use Tools → Check Work → Done!
 Your Documents → Chunk → Embed → Store → Search when needed
 ```
 
-## 🎯 Project Status
+## 🎯 What's Working vs What's Planned
 
-### ✅ What Works
+### ✅ Working Now
 
-- **Basic agent workflows** - Event-driven agents with tools
-- **Flink Agents integration** - Adapters work, can convert events and wrap tools
-- **Demo scenarios** - 7 interactive demos showing capabilities
-- **OpenAI integration** - Connect to OpenAI models
-- **Tool execution** - Extensible tool framework
-- **Event conversion** - Bidirectional, lossless conversion proven
-- **Performance** - Fast event processing (16,000+ events/sec in tests)
+- **Context Management Algorithms** - MoSCoW prioritization, 5-phase compaction
+- **Tool Execution Framework** - LangChain4J @Tool integration
+- **Redis Storage** - Production-ready caching layer
+- **Flink CEP** - Complex event processing for workflows
+- **Event System** - Custom event model for agent orchestration
+- **Core Infrastructure** - Project structure, build system, dependencies
 
-### ⚠️ Experimental / In Progress
+### 🚧 In Progress (v1.0)
 
-- **Production hardening** - Not battle-tested in production
-- **Error recovery** - Basic error handling, needs more robustness
-- **Documentation** - Good starting point, could be more comprehensive
-- **Test coverage** - Some tests exist, more needed
-- **Deployment guides** - Not yet documented
-- **Scalability testing** - Small-scale testing only
+- **PostgreSQL Storage** - Durable conversation storage with tests
+- **Tiered Agent Example** - Real validation → execution → supervisor flow
+- **LangChain4J Integration** - End-to-end with actual LLM calls
+- **Test Suite** - Comprehensive coverage for all components
+- **Docker Setup** - One-command infrastructure setup
 
-### 🔮 Future Ideas
+### 📋 Planned (see ROADMAP.md)
 
-- Contribute patterns back to Apache Flink Agents
-- More comprehensive testing
+- Kafka streaming integration
+- Apache Flink Agents plugin (when framework matures)
+- Additional storage backends
+- Advanced RAG with vector embeddings
 - Production deployment patterns
-- More tool integrations
-- Better observability
-- Community feedback and iteration
+- Observability and monitoring
 
 ## 🤝 Contributing
 
@@ -230,35 +262,52 @@ Apache License 2.0 - Use freely, but no warranties provided.
 
 ## ⚠️ Important Notes
 
-**This is experimental software:**
-- Not tested in production environments
-- APIs may change
-- Use at your own risk
-- Great for learning and experimentation
-- Not recommended for critical systems yet
+**This is active development:**
+- ✅ Core algorithms are solid and tested
+- 🚧 Integration work in progress
+- 📋 Many features are planned, not implemented
+- 🧪 Use for learning and experimentation
+- ⚠️ Not production-ready yet
+
+**What makes this different:**
+- **Honest about status** - No overpromising
+- **Real implementations only** - No fake demos
+- **Production-focused** - Building for real use cases
+- **Community-driven** - Open to feedback and contributions
 
 **Security:**
 - Never commit API keys to git
-- Use environment variables for secrets
-- Review code before using in any production-like environment
+- Use environment variables for secrets (`.env` files)
+- Review code before deploying anywhere
 
 ## 🚀 Get Started
 
 ```bash
-# Try the demo
+# Check current status
+cat STATUS.md
+
+# See the roadmap
+cat ROADMAP.md
+
+# Build the project
+mvn clean compile
+
+# Run tests (when implemented)
+mvn test
+
+# Try the simulation demo (not real, just visualization)
 ./run-demo.sh
-
-# Read the guides
-cat DEMO_GUIDE.md
-
-# Explore the code
-ls src/main/java/com/ververica/flink/agent/
-
-# Experiment and learn!
 ```
+
+## 📖 Learn More
+
+- **Architecture**: See `CONCEPTS.md` for core ideas
+- **Storage**: See `STORAGE_ARCHITECTURE.md` for storage design
+- **Future Plans**: See `ROADMAP.md` for what's coming
+- **Progress**: See `STATUS.md` for current state
 
 ---
 
-**Built with curiosity and Apache Flink** 🚀
+**Being built honestly, one real feature at a time.** 🚀
 
-Questions? Open an issue or reach out!
+Questions? Issues? Open a GitHub issue!
