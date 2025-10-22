@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.ververica.flink.agent.storage.memory.InMemoryShortTermStoreTest
 -------------------------------------------------------------------------------
-Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.308 s -- in com.ververica.flink.agent.storage.memory.InMemoryShortTermStoreTest
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.266 s -- in com.ververica.flink.agent.storage.memory.InMemoryShortTermStoreTest
