@@ -261,21 +261,20 @@ public class CepPatternBuilder {
 
       // Now add the terminal step
       Pattern<AgentEvent, ?> terminalPattern;
-      if (parentBuilder.pattern == null) {
-        terminalPattern = Pattern.<AgentEvent>begin(stepName);
-      } else {
-        terminalPattern = parentBuilder.pattern.followedBy(stepName);
-      }
-
-      // Add condition for terminal step (typically FLOW_COMPLETED or FLOW_FAILED)
-      terminalPattern = terminalPattern.where(new SimpleCondition<AgentEvent>() {
+      SimpleCondition<AgentEvent> terminalCondition = new SimpleCondition<AgentEvent>() {
         @Override
         public boolean filter(AgentEvent event) throws Exception {
           return event.getEventType() == AgentEventType.FLOW_COMPLETED
               || event.getEventType() == AgentEventType.FLOW_FAILED
               || event.getEventType() == AgentEventType.LOOP_MAX_ITERATIONS_REACHED;
         }
-      });
+      };
+
+      if (parentBuilder.pattern == null) {
+        terminalPattern = Pattern.<AgentEvent>begin(stepName).where(terminalCondition);
+      } else {
+        terminalPattern = parentBuilder.pattern.followedBy(stepName).where(terminalCondition);
+      }
 
       parentBuilder.pattern = terminalPattern;
       return parentBuilder;
@@ -338,6 +337,7 @@ public class CepPatternBuilder {
     /**
      * Finalizes the current step and adds it to the parent pattern.
      */
+    @SuppressWarnings("unchecked")
     private void finalizeStep() {
       Pattern<AgentEvent, ?> stepPattern;
 
@@ -361,12 +361,12 @@ public class CepPatternBuilder {
 
       // Add event type condition (required)
       if (eventTypeCondition != null) {
-        stepPattern = stepPattern.where(eventTypeCondition);
+        stepPattern = ((Pattern<AgentEvent, AgentEvent>) stepPattern).where(eventTypeCondition);
       }
 
       // Add additional condition if provided
       if (additionalCondition != null) {
-        stepPattern = stepPattern.where(additionalCondition);
+        stepPattern = ((Pattern<AgentEvent, AgentEvent>) stepPattern).where(additionalCondition);
       }
 
       // Apply quantifiers

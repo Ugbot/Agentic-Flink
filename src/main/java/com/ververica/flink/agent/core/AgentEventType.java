@@ -7,6 +7,7 @@ public enum AgentEventType {
   FLOW_PAUSED,
   FLOW_COMPLETED,
   FLOW_FAILED,
+  FLOW_COMPENSATED,
 
   // Tool execution
   TOOL_CALL_REQUESTED,

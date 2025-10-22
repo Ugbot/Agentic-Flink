@@ -238,7 +238,7 @@ public class AgentJobGenerator implements Serializable {
 
     // Start with first tier
     DataStream<AgentEvent> currentTierInput = input;
-    SingleOutputStreamOperator<AgentEvent> currentTierOutput = null;
+    DataStream<AgentEvent> currentTierOutput = null;
 
     for (int i = 0; i < chain.getTierCount(); i++) {
       SupervisorChain.SupervisorTier tier = chain.getTier(i);

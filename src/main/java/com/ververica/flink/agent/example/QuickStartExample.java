@@ -59,7 +59,7 @@ public class QuickStartExample {
         .withSystemPrompt(
             "You are a helpful AI assistant. Answer questions clearly and concisely. " +
             "If you don't know something, say so.")
-        .withLlmModel("qwen2.5:3b")
+        .withLlmModel("qwen2.5:latest")
         .withTemperature(0.7)
         .withMaxIterations(3)
         .build();
@@ -73,7 +73,7 @@ public class QuickStartExample {
     System.out.println("🔗 Step 2: Creating LLM client...\n");
 
     LLMClient llmClient = LLMClient.builder()
-        .withModel("qwen2.5:3b")
+        .withModel("qwen2.5:latest")
         .withTemperature(0.7)
         .withBaseUrl("http://localhost:11434")
         .build();
