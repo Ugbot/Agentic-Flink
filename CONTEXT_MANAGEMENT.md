@@ -15,11 +15,11 @@ The context window management system provides:
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                  Context Window Management                       │
-├─────────────────────────────────────────────────────────────────┤
+┌───────────────────────────────────────────────────────────────────┐
+│                  Context Window Management                        │
+├───────────────────────────────────────────────────────────────────┤
 │                                                                   │
-│  Agent Event ──> Context Check ──┬──> Space Available ──> Process│
+│  Agent Event ──> Context Check ──┬──> Space Available ──> Process │
 │                                   │                               │
 │                                   └──> Overflow ──> Compact       │
 │                                                        │          │
@@ -30,12 +30,12 @@ The context window management system provides:
 │                            ├─> Temporal Analysis                  │
 │                            └─> Summarization                      │
 │                                     │                             │
-│                       ┌─────────────┴──────────────┐             │
+│                       ┌─────────────┴──────────────┐              │
 │                       v                            v              │
 │               Long-Term Storage              Discard              │
 │               (Inverse RAG)                  (Forget)             │
 │                                                                   │
-└─────────────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────────────┘
 ```
 
 ## MoSCoW Prioritization

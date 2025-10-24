@@ -219,6 +219,7 @@ mvn exec:java -Dexec.mainClass="com.ververica.flink.agent.example.StorageIntegra
 - **[STORAGE_ARCHITECTURE.md](STORAGE_ARCHITECTURE.md)** - Two-tier storage design (Redis + PostgreSQL)
 - **[STORAGE_QUICKSTART.md](STORAGE_QUICKSTART.md)** - Storage setup and integration
 - **[AGENT_FRAMEWORK.md](AGENT_FRAMEWORK.md)** - Agent patterns and workflows
+- **[FLINK_AGENTS_INTEGRATION.md](FLINK_AGENTS_INTEGRATION.md)** - Integration with Apache Flink Agents (official framework)
 
 **Project Status:**
 - **[STATUS.md](STATUS.md)** - Detailed component status (what's done, what's in progress)
@@ -308,7 +309,17 @@ Standing on the shoulders of giants:
 - **[Ollama](https://ollama.ai/)** - Local LLM inference made easy
 - **PostgreSQL & Redis** - Battle-tested storage that just works
 
-Special thanks to the Apache Flink Agents team for pioneering agent orchestration on Flink.
+### Apache Flink Agents Integration
+
+This project started in 2024 as independent research into LangChain4J + Flink integration. In October 2025, the Apache Flink community released **[Apache Flink Agents](https://flink.apache.org/)** (0.1.0)—the official framework for event-driven AI agents on Flink.
+
+**We're actively integrating with Apache Flink Agents** through a plugin architecture that combines:
+- 🏛️ Official Apache patterns (ReAct, Workflows, MCP protocol)
+- ⚡ Agentic-Flink innovations (MoSCoW context management, two-tier storage, validation patterns)
+
+See **[FLINK_AGENTS_INTEGRATION.md](FLINK_AGENTS_INTEGRATION.md)** for the full integration guide, timeline, and how to use both projects together.
+
+Special thanks to the Apache Flink Agents team for pioneering official agent orchestration on Flink and to the broader Apache community.
 
 ## 👤 Author
 
