@@ -228,18 +228,18 @@ config.setMaxIterations(5);  // Try up to 5 times total
 **Visual:**
 ```
 ┌─────────────────────────────────────┐
-│   Execute Tool                       │
-│         ↓                            │
-│   Validate Result                    │
-│         ↓                            │
+│   Execute Tool                      │
+│         ↓                           │
+│   Validate Result                   │
+│         ↓                           │
 │   Failed? ──Yes──> Correct ──┐      │
-│         No                    │      │
-│         ↓                     │      │
+│         No                   │      │
+│         ↓                    │      │
 │   Success! ✓                 │      │
-│                               │      │
-│   Reached max attempts? ──────┘      │
-│         ↓                            │
-│   Escalate to Supervisor             │
+│                              │      │
+│   Reached max attempts? ─────┘      │
+│         ↓                           │
+│   Escalate to Supervisor            │
 └─────────────────────────────────────┘
 ```
 
@@ -327,22 +327,22 @@ Need smart storage strategy
 ┌──────────────────────────────────────────┐
 │ Tier 1: Flink State (Hot)                │
 │ - Active conversations (last 30 min)     │
-│ - Super fast access                       │
-│ - Limited space                           │
+│ - Super fast access                      │
+│ - Limited space                          │
 └──────────────────────────────────────────┘
           ↓ Auto-offload after 30 min
 ┌──────────────────────────────────────────┐
 │ Tier 2: Redis Cache (Warm)               │
 │ - Recently active (last 24 hours)        │
-│ - Fast access                             │
-│ - More space                              │
+│ - Fast access                            │
+│ - More space                             │
 └──────────────────────────────────────────┘
           ↓ Auto-offload after 24 hours
 ┌──────────────────────────────────────────┐
 │ Tier 3: Database (Permanent)             │
-│ - Long-term storage                       │
-│ - Slower but reliable                     │
-│ - Unlimited space                         │
+│ - Long-term storage                      │
+│ - Slower but reliable                    │
+│ - Unlimited space                        │
 └──────────────────────────────────────────┘
 ```
 
@@ -601,8 +601,8 @@ config.setOffloadToDatabase(true);
 
 ```
 ┌────────────────────────────────────────┐
-│  Broadcast Message                      │
-│  "New tool available: WeatherAPI"       │
+│  Broadcast Message                     │
+│  "New tool available: WeatherAPI"      │
 └────────────────────────────────────────┘
            ↓ ↓ ↓ ↓ ↓
     ┌──────┴──────┴──────┴──────┐
@@ -818,20 +818,20 @@ metrics.gauge("agent.state_restoration_latency_ms");
 **Dashboard Example:**
 ```
 ┌─────────────────────────────────────────┐
-│  Agent Health Dashboard                  │
+│  Agent Health Dashboard                 │
 ├─────────────────────────────────────────┤
-│  Active Flows:  1,247                    │
-│  Offloaded:    15,832                    │
-│  Avg Latency:  234ms                     │
-│  Success Rate: 97.3%                     │
-│                                          │
-│  Validation:                             │
-│    ✓ Passed:   95.2%                     │
-│    ✗ Failed:    4.8%                     │
-│                                          │
-│  Corrections:                            │
-│    ✓ Fixed:    87.1%                     │
-│    → Supervisor: 12.9%                   │
+│  Active Flows:  1,247                   │
+│  Offloaded:    15,832                   │
+│  Avg Latency:  234ms                    │
+│  Success Rate: 97.3%                    │
+│                                         │
+│  Validation:                            │
+│    ✓ Passed:   95.2%                    │
+│    ✗ Failed:    4.8%                    │
+│                                         │
+│  Corrections:                           │
+│    ✓ Fixed:    87.1%                    │
+│    → Supervisor: 12.9%                  │
 └─────────────────────────────────────────┘
 ```
 
