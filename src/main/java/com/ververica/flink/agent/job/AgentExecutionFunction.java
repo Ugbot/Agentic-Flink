@@ -3,42 +3,31 @@ package com.ververica.flink.agent.job;
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.dsl.Agent;
+import com.ververica.flink.agent.execution.AgentExecutor;
+import com.ververica.flink.agent.execution.ExecutionResult;
 import com.ververica.flink.agent.statemachine.AgentState;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.apache.flink.cep.functions.PatternProcessFunction;
 import org.apache.flink.cep.functions.TimedOutPartialMatchHandler;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CEP PatternProcessFunction for executing a single agent.
+ * CEP PatternProcessFunction that executes an agent when a pattern match occurs.
  *
- * <p>Processes pattern matches from the agent's state machine and performs:
- * <ul>
- *   <li>LLM calls with the agent's system prompt and tools</li>
- *   <li>Tool execution (async, with retries)</li>
- *   <li>Validation and correction loops</li>
- *   <li>Timeout handling and partial match recovery</li>
- *   <li>Side output routing for failures and timeouts</li>
- * </ul>
+ * <p>Bridges the declarative CEP pipeline to the {@link AgentExecutor} which handles
+ * the full agentic loop: LLM reasoning, tool calling, validation, and correction.
  *
- * <p>This function is invoked by Flink CEP when a pattern match occurs. The pattern
- * is generated from the agent's state machine.
+ * <p>The executor is lazily initialized on first invocation because
+ * {@link PatternProcessFunction} does not provide an {@code open()} lifecycle hook.
  *
- * <p><b>State Flow:</b>
- * <pre>
- * INITIALIZED → VALIDATING → EXECUTING → [TOOL_CALLS] → COMPLETED
- *                    ↓              ↓
- *               CORRECTING    SUPERVISOR_REVIEW
- * </pre>
- *
- * @author Agentic Flink Team
- * @see Agent
+ * @see AgentExecutor
  * @see AgentJobGenerator
  */
 public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, AgentEvent>
@@ -50,15 +39,26 @@ public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, A
   private final Agent agent;
   private final ToolRegistry toolRegistry;
 
-  // Side output tags (from AgentJobGenerator)
   private static final OutputTag<AgentEvent> VALIDATION_FAILURES_TAG =
       AgentJobGenerator.VALIDATION_FAILURES_TAG;
   private static final OutputTag<AgentEvent> TIMEOUT_TAG =
       AgentJobGenerator.TIMEOUT_TAG;
 
+  private transient AgentExecutor executor;
+
   public AgentExecutionFunction(Agent agent, ToolRegistry toolRegistry) {
     this.agent = agent;
     this.toolRegistry = toolRegistry;
+  }
+
+  private AgentExecutor getOrCreateExecutor() {
+    if (executor == null) {
+      executor = AgentExecutor.builder()
+          .withAgent(agent)
+          .withToolRegistry(toolRegistry)
+          .build();
+    }
+    return executor;
   }
 
   @Override
@@ -66,54 +66,64 @@ public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, A
       Map<String, List<AgentEvent>> match, Context ctx, Collector<AgentEvent> out)
       throws Exception {
 
-    LOG.debug("Pattern match for agent: {}", agent.getAgentId());
-
-    // Extract events from pattern match
-    // Pattern structure depends on agent's state machine, but typically:
-    // - "start" → FLOW_STARTED or INITIALIZED
-    // - "validation" → VALIDATION_PASSED (if enabled)
-    // - "execution" → TOOL_CALL_COMPLETED (may be multiple)
-    // - "complete" → COMPLETED
-
-    List<AgentEvent> startEvents = match.get("start");
-    List<AgentEvent> executionEvents = match.get("execution");
+    // Pattern names come from AgentStateMachine.generateCepPattern()
+    List<AgentEvent> startEvents = match.get("initial");
 
     if (startEvents == null || startEvents.isEmpty()) {
-      LOG.warn("No start event in pattern match for flow, skipping");
+      LOG.warn("No initial event in pattern match for agent {}, skipping", agent.getAgentId());
       return;
     }
 
     AgentEvent startEvent = startEvents.get(0);
     String flowId = startEvent.getFlowId();
 
-    LOG.info("Processing agent execution for flow: {}", flowId);
-
-    // Phase 3 (not yet implemented): Full agent execution logic
-    // This is a placeholder that demonstrates the structure
-    // Full implementation will include:
-    // - LLM calls via LangChain4J
-    // - Tool execution with async I/O
-    // - Validation loops
-    // - Correction loops
-    // - Supervisor escalation checks
+    LOG.info("Executing agent {} for flow: {}", agent.getAgentId(), flowId);
 
     try {
-      // Simulate agent execution
-      AgentEvent completionEvent = createCompletionEvent(startEvent, executionEvents);
-      out.collect(completionEvent);
+      long timeoutMs = agent.getTimeout() != null
+          ? agent.getTimeout().toMillis()
+          : 300_000L; // 5 minute default
 
-      LOG.info("Agent execution completed for flow: {}", flowId);
+      ExecutionResult result = getOrCreateExecutor()
+          .execute(startEvent)
+          .get(timeoutMs, TimeUnit.MILLISECONDS);
+
+      if (result.isSuccess()) {
+        AgentEvent completionEvent = startEvent.withEventType(AgentEventType.FLOW_COMPLETED);
+        completionEvent.incrementIteration();
+        completionEvent.putMetadata("state", AgentState.COMPLETED.name());
+        completionEvent.getData().put("agent_id", agent.getAgentId());
+        completionEvent.getData().put("output", result.getOutput());
+        completionEvent.getData().put("tool_call_count", result.getEvents().size());
+        completionEvent.getData().put("completion_timestamp", System.currentTimeMillis());
+        out.collect(completionEvent);
+        LOG.info("Agent {} completed flow: {}", agent.getAgentId(), flowId);
+      } else {
+        AgentEvent failureEvent = startEvent.withEventType(AgentEventType.FLOW_FAILED);
+        failureEvent.incrementIteration();
+        failureEvent.putMetadata("state", AgentState.FAILED.name());
+        failureEvent.getData().put("agent_id", agent.getAgentId());
+        failureEvent.getData().put("error", result.getOutput());
+        ctx.output(VALIDATION_FAILURES_TAG, failureEvent);
+        LOG.warn("Agent {} failed for flow: {}: {}", agent.getAgentId(), flowId, result.getOutput());
+      }
+
+    } catch (TimeoutException e) {
+      LOG.error("Agent {} timed out for flow: {}", agent.getAgentId(), flowId);
+      AgentEvent timeoutEvent = startEvent.withEventType(AgentEventType.FLOW_FAILED);
+      timeoutEvent.incrementIteration();
+      timeoutEvent.putMetadata("state", AgentState.FAILED.name());
+      timeoutEvent.getData().put("error", "Agent execution timed out");
+      timeoutEvent.getData().put("agent_id", agent.getAgentId());
+      ctx.output(TIMEOUT_TAG, timeoutEvent);
 
     } catch (Exception e) {
-      LOG.error("Agent execution failed for flow: {}", flowId, e);
-
-      // Create failure event
+      LOG.error("Agent {} execution error for flow: {}", agent.getAgentId(), flowId, e);
       AgentEvent failureEvent = startEvent.withEventType(AgentEventType.FLOW_FAILED);
       failureEvent.incrementIteration();
       failureEvent.putMetadata("state", AgentState.FAILED.name());
       failureEvent.getData().put("error", e.getMessage());
-
-      // Route to validation failures side output
+      failureEvent.getData().put("agent_id", agent.getAgentId());
       ctx.output(VALIDATION_FAILURES_TAG, failureEvent);
     }
   }
@@ -122,57 +132,26 @@ public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, A
   public void processTimedOutMatch(
       Map<String, List<AgentEvent>> match, Context ctx) throws Exception {
 
-    LOG.warn("Pattern match timed out for agent: {}", agent.getAgentId());
-
-    List<AgentEvent> startEvents = match.get("start");
+    List<AgentEvent> startEvents = match.get("initial");
     if (startEvents == null || startEvents.isEmpty()) {
       return;
     }
 
     AgentEvent startEvent = startEvents.get(0);
-    String flowId = startEvent.getFlowId();
+    LOG.warn("Pattern match timed out for agent {} flow: {}",
+        agent.getAgentId(), startEvent.getFlowId());
 
-    LOG.warn("Flow timed out: {}", flowId);
-
-    // Create timeout event
     AgentEvent timeoutEvent = startEvent.withEventType(AgentEventType.TIMEOUT_OCCURRED);
     timeoutEvent.incrementIteration();
     timeoutEvent.putMetadata("state", AgentState.FAILED.name());
-    timeoutEvent.getData().put("timeout_reason", "Pattern match exceeded time window");
+    timeoutEvent.getData().put("timeout_reason", "CEP pattern match exceeded time window");
     timeoutEvent.getData().put("agent_id", agent.getAgentId());
-
-    // Route to timeout side output
     ctx.output(TIMEOUT_TAG, timeoutEvent);
 
-    // If compensation is enabled, trigger compensation
     if (agent.isCompensationEnabled()) {
       AgentEvent compensationEvent = startEvent.createCompensationEvent();
       compensationEvent.putMetadata("state", AgentState.COMPENSATING.name());
       ctx.output(AgentJobGenerator.COMPENSATION_TAG, compensationEvent);
     }
-  }
-
-  /**
-   * Creates a completion event from the execution results.
-   *
-   * <p>Phase 3 (not yet implemented): This will aggregate results from tool calls, validation, etc.
-   */
-  private AgentEvent createCompletionEvent(
-      AgentEvent startEvent, List<AgentEvent> executionEvents) {
-
-    AgentEvent completionEvent = startEvent.withEventType(AgentEventType.FLOW_COMPLETED);
-    completionEvent.incrementIteration();
-    completionEvent.putMetadata("state", AgentState.COMPLETED.name());
-
-    // Phase 3 (not yet implemented): Aggregate execution results
-    if (executionEvents != null && !executionEvents.isEmpty()) {
-      completionEvent.getData().put("execution_count", executionEvents.size());
-      completionEvent.getData().put("last_execution", executionEvents.get(executionEvents.size() - 1).getData());
-    }
-
-    completionEvent.getData().put("agent_id", agent.getAgentId());
-    completionEvent.getData().put("completion_timestamp", System.currentTimeMillis());
-
-    return completionEvent;
   }
 }

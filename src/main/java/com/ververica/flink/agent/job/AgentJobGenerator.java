@@ -9,9 +9,11 @@ import com.ververica.flink.agent.config.AgenticFlinkConfig;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
+import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -317,13 +319,13 @@ public class AgentJobGenerator implements Serializable {
   private SingleOutputStreamOperator<AgentEvent> wireStorage(
       SingleOutputStreamOperator<AgentEvent> stream, Agent agent) {
 
-    AgenticFlinkConfig storageConfig = job.getStorageConfig();
+    AgenticFlinkConfig config = job.getStorageConfig();
 
-    // Phase 4 (not yet implemented): Tiered storage with async I/O
-    // For now, just pass through
-    LOG.debug("Storage wiring deferred to Phase 4 for agent: {}", agent.getAgentId());
-
-    return stream;
+    return (SingleOutputStreamOperator<AgentEvent>) AsyncDataStream.unorderedWait(
+        stream,
+        new StorageSinkFunction(config),
+        5000, TimeUnit.MILLISECONDS, 100
+    ).name("storage-" + agent.getAgentId());
   }
 
   // ==================== Side Output Routing ====================

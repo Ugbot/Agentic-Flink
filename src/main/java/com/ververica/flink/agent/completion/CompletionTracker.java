@@ -363,16 +363,24 @@ public class CompletionTracker implements Serializable {
   // ==================== Future: Goal-Based Completion ====================
 
   /**
-   * Checks if a goal predicate is satisfied (FUTURE FEATURE).
+   * Checks if a goal predicate is satisfied against this tracker's accumulated state and event
+   * history.
    *
-   * <p>This method is a placeholder for future goal-based completion logic. Currently throws
-   * UnsupportedOperationException.
-   *
-   * @param goal The goal predicate to check
+   * @param goal The goal predicate to evaluate
    * @return true if the goal is satisfied
    */
   public boolean isGoalSatisfied(GoalPredicate goal) {
-    throw new UnsupportedOperationException(
-        "Goal-based completion not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+    return goal.isSatisfied(accumulatedState, eventHistory);
+  }
+
+  /**
+   * Returns the confidence score (0.0 to 1.0) for a goal predicate against this tracker's
+   * accumulated state and event history.
+   *
+   * @param goal The goal predicate to evaluate
+   * @return confidence score between 0.0 and 1.0
+   */
+  public double getGoalConfidence(GoalPredicate goal) {
+    return goal.getConfidence(accumulatedState, eventHistory);
   }
 }

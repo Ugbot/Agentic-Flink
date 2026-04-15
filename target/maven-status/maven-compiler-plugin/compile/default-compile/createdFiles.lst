@@ -1,5 +1,6 @@
 com/ververica/flink/agent/example/CompensationExample$MockUserTool.class
 com/ververica/flink/agent/cep/CepPatternBuilder$PatternStepBuilder.class
+com/ververica/flink/agent/job/StorageSinkFunction.class
 com/ververica/flink/agent/serde/ToolCallRequest.class
 com/ververica/flink/agent/example/ToolExecutionExample.class
 com/ververica/flink/agent/cep/PatternConditions$2.class
@@ -44,6 +45,7 @@ com/ververica/flink/agent/execution/LLMResponse.class
 com/ververica/flink/agent/stream/CompensationFunction.class
 com/ververica/flink/agent/storage/redis/RedisShortTermStore$2.class
 com/ververica/flink/agent/context/manager/ContextWindowManager$ContextWindowConfig.class
+com/ververica/flink/agent/completion/CompositeGoalPredicate.class
 com/ververica/flink/agent/statemachine/AgentStateMachine$5.class
 com/ververica/flink/agent/pattern/AgentCEPPattern$EventTypeCondition.class
 com/ververica/flink/agent/tools/rag/RagToolExecutor.class
@@ -58,6 +60,7 @@ com/ververica/flink/agent/execution/ToolExecutionEngine.class
 com/ververica/flink/agent/storage/ShortTermMemoryStore.class
 com/ververica/flink/agent/job/AgentJob$MonitoringConfig.class
 com/ververica/flink/agent/job/AgentJobGenerator.class
+com/ververica/flink/agent/completion/EventCountPredicate.class
 com/ververica/flink/agent/storage/redis/RedisShortTermStore$1.class
 com/ververica/flink/agent/langchain/model/embedding/DefaultEmbeddingModel.class
 com/ververica/flink/agent/context/memory/ShortTermMemory.class
@@ -116,6 +119,7 @@ com/ververica/flink/agent/execution/ExecutionContext.class
 com/ververica/flink/agent/example/TieredAgentExample$SupervisorAgent.class
 com/ververica/flink/agent/cep/PatternConditions$5.class
 com/ververica/flink/agent/job/AgentJobGenerator$2.class
+com/ververica/flink/agent/completion/NumericThresholdPredicate.class
 com/ververica/flink/agent/function/ToolCallAsyncFunction.class
 com/ververica/flink/agent/function/ValidationFunction.class
 com/ververica/flink/agent/completion/TaskList$Task.class
@@ -137,6 +141,7 @@ com/ververica/flink/agent/dsl/AgentBuilder$1.class
 com/ververica/flink/agent/example/ContextManagementExample.class
 com/ververica/flink/agent/stream/AgentExecutionStream.class
 com/ververica/flink/agent/example/TieredAgentExample.class
+com/ververica/flink/agent/completion/CompositeGoalPredicate$CompositeMode.class
 com/ververica/flink/agent/cep/PatternConditions$6.class
 com/ververica/flink/agent/context/memory/SteeringState$SteeringRule.class
 com/ververica/flink/agent/cep/PatternConditions$15.class
@@ -211,6 +216,7 @@ com/ververica/flink/agent/dsl/SupervisorChainBuilder.class
 com/ververica/flink/agent/cep/PatternConditions$18.class
 com/ververica/flink/agent/statemachine/AgentStateMachine$7.class
 com/ververica/flink/agent/example/StorageIntegratedFlinkJob$StorageAwareConversationProcessor.class
+com/ververica/flink/agent/completion/StateExistsPredicate.class
 com/ververica/flink/agent/dsl/SupervisorChain.class
 com/ververica/flink/agent/serde/ToolAllowlistAction.class
 com/ververica/flink/agent/dsl/SupervisorChain$EscalationPolicy.class

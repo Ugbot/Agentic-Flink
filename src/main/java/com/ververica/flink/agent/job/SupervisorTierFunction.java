@@ -6,11 +6,17 @@ import com.ververica.flink.agent.dsl.Agent;
 import com.ververica.flink.agent.dsl.SupervisorChain;
 import com.ververica.flink.agent.dsl.SupervisorChain.EscalationPolicy;
 import com.ververica.flink.agent.dsl.SupervisorChain.SupervisorTier;
+import com.ververica.flink.agent.execution.AgentExecutor;
+import com.ververica.flink.agent.execution.ExecutionResult;
 import com.ververica.flink.agent.statemachine.AgentState;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.flink.cep.functions.PatternProcessFunction;
 import org.apache.flink.cep.functions.TimedOutPartialMatchHandler;
 import org.apache.flink.util.Collector;
@@ -69,11 +75,37 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
   private static final OutputTag<AgentEvent> VALIDATION_FAILURES_TAG =
       AgentJobGenerator.VALIDATION_FAILURES_TAG;
 
+  private transient AgentExecutor executor;
+
+  /** Regex for explicit score patterns like "Score: 0.9" or "Quality: 85%". */
+  private static final Pattern SCORE_PATTERN =
+      Pattern.compile("(?:score|quality|rating|confidence)[:\\s]+([0-9]+(?:\\.[0-9]+)?)[\\s]*(%)?",
+          Pattern.CASE_INSENSITIVE);
+
+  private static final String[] POSITIVE_KEYWORDS = {
+      "good", "excellent", "correct", "complete", "accurate", "valid", "approved",
+      "satisfactory", "well", "proper", "thorough", "comprehensive"
+  };
+  private static final String[] NEGATIVE_KEYWORDS = {
+      "poor", "incorrect", "incomplete", "error", "invalid", "rejected",
+      "unsatisfactory", "wrong", "missing", "failure", "failed", "bad"
+  };
+
   public SupervisorTierFunction(
       SupervisorTier tier, SupervisorChain chain, ToolRegistry toolRegistry) {
     this.tier = tier;
     this.chain = chain;
     this.toolRegistry = toolRegistry;
+  }
+
+  private AgentExecutor getOrCreateExecutor() {
+    if (executor == null) {
+      executor = AgentExecutor.builder()
+          .withAgent(tier.getAgent())
+          .withToolRegistry(toolRegistry)
+          .build();
+    }
+    return executor;
   }
 
   @Override
@@ -85,7 +117,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
     LOG.debug("Processing tier {} ({}) for agent: {}",
         tier.getTierIndex(), tier.getTierName(), agent.getAgentId());
 
-    List<AgentEvent> startEvents = match.get("start");
+    List<AgentEvent> startEvents = match.get("initial");
     if (startEvents == null || startEvents.isEmpty()) {
       LOG.warn("No start event in pattern match, skipping");
       return;
@@ -115,10 +147,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
     }
 
     try {
-      // Phase 3 (not yet implemented): Full supervisor tier execution
-      // This is a placeholder showing the escalation logic structure
-
-      // Simulate tier execution
+      // Execute the tier's agent via AgentExecutor
       AgentEvent tierResult = executeTier(startEvent, match);
 
       // Evaluate quality and determine if escalation is needed
@@ -157,37 +186,123 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
   }
 
   /**
-   * Executes this tier (LLM call + tool execution).
+   * Executes this supervisor tier by delegating to the {@link AgentExecutor}.
    *
-   * <p>Phase 3 (not yet implemented): Full execution with LangChain4J.
+   * <p>The executor runs the full agentic loop for the tier's agent, then the result
+   * is packaged as a SUPERVISOR_REVIEW_COMPLETED event for quality evaluation.
+   *
+   * @throws TimeoutException if execution exceeds the agent's configured timeout
    */
-  private AgentEvent executeTier(AgentEvent startEvent, Map<String, List<AgentEvent>> match) {
-    // Placeholder - will call LLM with tier agent's prompt and tools
+  private AgentEvent executeTier(AgentEvent startEvent, Map<String, List<AgentEvent>> match)
+      throws Exception {
+
+    Agent agent = tier.getAgent();
+    long timeoutMs = agent.getTimeout() != null
+        ? agent.getTimeout().toMillis()
+        : 300_000L; // 5 minute default
+
+    ExecutionResult executionResult = getOrCreateExecutor()
+        .execute(startEvent)
+        .get(timeoutMs, TimeUnit.MILLISECONDS);
+
     AgentEvent result = startEvent.withEventType(AgentEventType.SUPERVISOR_REVIEW_COMPLETED);
     result.incrementIteration();
     result.putMetadata("state", AgentState.SUPERVISOR_REVIEW.name());
-
-    result.getData().put("reviewed_by", tier.getAgent().getAgentId());
+    result.getData().put("reviewed_by", agent.getAgentId());
     result.getData().put("tier_index", tier.getTierIndex());
+
+    if (executionResult.isSuccess()) {
+      result.getData().put("review_output", executionResult.getOutput());
+      result.getData().put("tool_call_count", executionResult.getEvents().size());
+    } else {
+      result.getData().put("review_output", executionResult.getOutput());
+      result.getData().put("execution_failed", true);
+      result.getData().put("error", executionResult.getErrorMessage());
+    }
 
     return result;
   }
 
   /**
-   * Evaluates quality score from tier execution.
+   * Evaluates a quality score from the tier's execution result.
    *
-   * <p>Phase 3 (not yet implemented): Quality evaluation (LLM-based or rule-based).
+   * <p>Scoring strategy (ordered by priority):
+   * <ol>
+   *   <li>If the event data already contains a numeric {@code quality_score}, use it directly.</li>
+   *   <li>If the event was marked as a failed execution, return 0.0.</li>
+   *   <li>Parse the LLM review output for explicit score patterns such as
+   *       "Score: 0.9" or "Quality: 85%".</li>
+   *   <li>Fall back to keyword analysis: count positive vs negative quality indicators
+   *       in the review text and derive a score between 0.0 and 1.0.</li>
+   *   <li>If no review output is available at all, default to 0.5 (uncertain).</li>
+   * </ol>
    */
   private double evaluateQualityScore(AgentEvent tierResult) {
-    // Placeholder - will evaluate based on LLM output or validation rules
-    // For now, return a simulated score
+    // 1. Check for an explicit numeric score already present
     Object scoreObj = tierResult.getData().get("quality_score");
     if (scoreObj instanceof Number) {
-      return ((Number) scoreObj).doubleValue();
+      return clampScore(((Number) scoreObj).doubleValue());
     }
 
-    // Default: assume quality is good if no explicit score
-    return 0.85;
+    // 2. If the execution itself failed, quality is zero
+    Object execFailed = tierResult.getData().get("execution_failed");
+    if (Boolean.TRUE.equals(execFailed)) {
+      return 0.0;
+    }
+
+    // 3. Try to extract a score from the LLM review output text
+    Object reviewOutput = tierResult.getData().get("review_output");
+    if (reviewOutput == null) {
+      return 0.5; // No output to evaluate
+    }
+
+    String reviewText = reviewOutput.toString();
+    if (reviewText.isEmpty()) {
+      return 0.5;
+    }
+
+    // 3a. Look for explicit score patterns like "Score: 0.9" or "Quality: 85%"
+    Matcher matcher = SCORE_PATTERN.matcher(reviewText);
+    if (matcher.find()) {
+      double parsed = Double.parseDouble(matcher.group(1));
+      boolean isPercentage = matcher.group(2) != null;
+      if (isPercentage || parsed > 1.0) {
+        parsed = parsed / 100.0;
+      }
+      return clampScore(parsed);
+    }
+
+    // 3b. Keyword-based scoring as fallback
+    String lowerText = reviewText.toLowerCase();
+
+    int positiveCount = 0;
+    for (String keyword : POSITIVE_KEYWORDS) {
+      if (lowerText.contains(keyword)) {
+        positiveCount++;
+      }
+    }
+
+    int negativeCount = 0;
+    for (String keyword : NEGATIVE_KEYWORDS) {
+      if (lowerText.contains(keyword)) {
+        negativeCount++;
+      }
+    }
+
+    int total = positiveCount + negativeCount;
+    if (total == 0) {
+      return 0.5; // No quality indicators found
+    }
+
+    // Score = ratio of positive keywords, shifted towards 0.5 baseline
+    double rawRatio = (double) positiveCount / total;
+    // Blend with 0.5 to avoid extreme scores from sparse keyword matches
+    double blendedScore = 0.5 + (rawRatio - 0.5) * Math.min(1.0, total / 6.0);
+    return clampScore(blendedScore);
+  }
+
+  private static double clampScore(double score) {
+    return Math.max(0.0, Math.min(1.0, score));
   }
 
   /**
@@ -318,7 +433,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
 
     LOG.warn("Pattern match timed out for tier: {}", tier.getTierName());
 
-    List<AgentEvent> startEvents = match.get("start");
+    List<AgentEvent> startEvents = match.get("initial");
     if (startEvents == null || startEvents.isEmpty()) {
       return;
     }

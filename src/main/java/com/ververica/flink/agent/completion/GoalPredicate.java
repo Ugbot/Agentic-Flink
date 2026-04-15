@@ -1,7 +1,9 @@
 package com.ververica.flink.agent.completion;
 
 import com.ververica.flink.agent.core.AgentEvent;
+import com.ververica.flink.agent.core.AgentEventType;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -129,8 +131,7 @@ public interface GoalPredicate extends Serializable {
    * @return goal predicate checking for state existence
    */
   static GoalPredicate stateExists(String stateKey) {
-    throw new UnsupportedOperationException(
-        "Goal-based predicates not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+    return new StateExistsPredicate(stateKey);
   }
 
   /**
@@ -143,8 +144,7 @@ public interface GoalPredicate extends Serializable {
    * @return goal predicate checking numeric threshold
    */
   static GoalPredicate greaterThan(String stateKey, double threshold) {
-    throw new UnsupportedOperationException(
-        "Goal-based predicates not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+    return new NumericThresholdPredicate(stateKey, threshold);
   }
 
   /**
@@ -156,8 +156,7 @@ public interface GoalPredicate extends Serializable {
    * @return goal predicate that requires all sub-goals
    */
   static GoalPredicate all(GoalPredicate... subGoals) {
-    throw new UnsupportedOperationException(
-        "Goal-based predicates not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+    return new CompositeGoalPredicate(CompositeGoalPredicate.CompositeMode.AND, List.of(subGoals));
   }
 
   /**
@@ -169,8 +168,7 @@ public interface GoalPredicate extends Serializable {
    * @return goal predicate that requires any sub-goal
    */
   static GoalPredicate any(GoalPredicate... subGoals) {
-    throw new UnsupportedOperationException(
-        "Goal-based predicates not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+    return new CompositeGoalPredicate(CompositeGoalPredicate.CompositeMode.OR, List.of(subGoals));
   }
 
   /**
@@ -182,22 +180,17 @@ public interface GoalPredicate extends Serializable {
    * @return goal predicate that negates the input
    */
   static GoalPredicate not(GoalPredicate goal) {
-    throw new UnsupportedOperationException(
-        "Goal-based predicates not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+    return new CompositeGoalPredicate(CompositeGoalPredicate.CompositeMode.NOT, List.of(goal));
   }
 
   /**
-   * Creates a goal that counts events matching a condition.
+   * Creates a goal that counts events of a specific type and checks the count against a target.
    *
-   * <p><b>Implementation status:</b> Not yet implemented (placeholder for future architecture)
-   *
-   * @param eventCondition Condition to match events
-   * @param targetCount Target count to reach
+   * @param eventType the event type to count
+   * @param targetCount the minimum number of matching events required
    * @return goal predicate checking event count
    */
-  static GoalPredicate eventCount(
-      java.util.function.Predicate<AgentEvent> eventCondition, int targetCount) {
-    throw new UnsupportedOperationException(
-        "Goal-based predicates not yet implemented. See docs/GOAL_BASED_ARCHITECTURE.md");
+  static GoalPredicate eventCount(AgentEventType eventType, int targetCount) {
+    return new EventCountPredicate(eventType, targetCount);
   }
 }
