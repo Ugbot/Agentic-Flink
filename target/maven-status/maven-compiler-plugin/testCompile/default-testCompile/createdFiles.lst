@@ -1,6 +1,9 @@
-com/ververica/flink/agent/storage/integration/StorageHydrationIntegrationTest.class
-com/ververica/flink/agent/storage/StorageFactoryTest.class
+com/ververica/flink/agent/execution/ToolCallParsingTest.class
 com/ververica/flink/agent/storage/redis/RedisShortTermStoreTest.class
 com/ververica/flink/agent/storage/memory/InMemoryShortTermStoreTest.class
+com/ververica/flink/agent/storage/integration/StorageHydrationIntegrationTest.class
+com/ververica/flink/agent/integration/StandaloneLLMIT.class
+com/ververica/flink/agent/storage/StorageFactoryTest.class
+com/ververica/flink/agent/integration/StandaloneToolExecutionIT.class
 com/ververica/flink/agent/storage/postgres/PostgresConversationStoreTest.class
 com/ververica/flink/agent/storage/metrics/StorageMetricsTest.class

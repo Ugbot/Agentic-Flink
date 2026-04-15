@@ -11,11 +11,11 @@
     <description>Standalone Agentic Framework for Apache Flink with LangChain4J Integration</description>
 
     <properties>
-        <flink.version>1.17.2</flink.version>
-        <java.version>11</java.version>
+        <flink.version>1.20.1</flink.version>
+        <java.version>17</java.version>
         <log4j.version>2.17.1</log4j.version>
         <langchain4j.version>0.35.0</langchain4j.version>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
         <maven.plugin.shade.version>3.6.0</maven.plugin.shade.version>
         <junit.version>5.8.1</junit.version>
         <maven.compiler.source>11</maven.compiler.source>
@@ -208,6 +208,13 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                     <!-- Exclude Flink Agents plugin by default -->
                     <excludes>
                         <exclude>**/plugins/flintagents/**</exclude>
