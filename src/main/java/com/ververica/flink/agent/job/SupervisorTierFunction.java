@@ -115,7 +115,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
     }
 
     try {
-      // TODO: Phase 3 - Implement full supervisor tier execution
+      // Phase 3 (not yet implemented): Full supervisor tier execution
       // This is a placeholder showing the escalation logic structure
 
       // Simulate tier execution
@@ -159,7 +159,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
   /**
    * Executes this tier (LLM call + tool execution).
    *
-   * <p>TODO: Phase 3 - Implement full execution with LangChain4J.
+   * <p>Phase 3 (not yet implemented): Full execution with LangChain4J.
    */
   private AgentEvent executeTier(AgentEvent startEvent, Map<String, List<AgentEvent>> match) {
     // Placeholder - will call LLM with tier agent's prompt and tools
@@ -176,7 +176,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
   /**
    * Evaluates quality score from tier execution.
    *
-   * <p>TODO: Phase 3 - Implement quality evaluation (LLM-based or rule-based).
+   * <p>Phase 3 (not yet implemented): Quality evaluation (LLM-based or rule-based).
    */
   private double evaluateQualityScore(AgentEvent tierResult) {
     // Placeholder - will evaluate based on LLM output or validation rules
@@ -206,7 +206,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
 
     // Check if human approval required (treated as escalation to human)
     if (tier.isRequiresHumanApproval()) {
-      // TODO: Phase 3 - Implement human approval logic
+      // Phase 3 (not yet implemented): Human approval logic
       LOG.info("Tier {} requires human approval", tier.getTierIndex());
       return false;  // For now, don't escalate (assume approved)
     }
@@ -271,7 +271,7 @@ public class SupervisorTierFunction extends PatternProcessFunction<AgentEvent, A
         return -1;
 
       case CUSTOM:
-        // TODO: Phase 3 - Implement custom escalation logic
+        // Phase 3 (not yet implemented): Custom escalation logic
         LOG.warn("Custom escalation policy not yet implemented, using NEXT_TIER");
         return chain.getNextTier(tier.getTierIndex())
             .map(SupervisorTier::getTierIndex)

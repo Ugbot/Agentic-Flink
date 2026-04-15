@@ -5,8 +5,7 @@ import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.dsl.Agent;
 import com.ververica.flink.agent.dsl.SupervisorChain;
-import com.ververica.flink.agent.storage.AgentStorageFactory;
-import com.ververica.flink.agent.storage.AgentStorageFactory.StorageConfig;
+import com.ververica.flink.agent.config.AgenticFlinkConfig;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.io.Serializable;
 import java.util.*;
@@ -48,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * // 2. Create job
  * AgentJob job = AgentJob.builder()
  *     .withAgent(executor)
- *     .withStorageConfig(storageConfig)
+ *     .withAgenticFlinkConfig(storageConfig)
  *     .withToolRegistry(toolRegistry)
  *     .build();
  *
@@ -74,7 +73,7 @@ import org.slf4j.LoggerFactory;
  *
  * AgentJob job = AgentJob.builder()
  *     .withSupervisorChain(chain)
- *     .withStorageConfig(storageConfig)
+ *     .withAgenticFlinkConfig(storageConfig)
  *     .withToolRegistry(toolRegistry)
  *     .build();
  *
@@ -318,9 +317,9 @@ public class AgentJobGenerator implements Serializable {
   private SingleOutputStreamOperator<AgentEvent> wireStorage(
       SingleOutputStreamOperator<AgentEvent> stream, Agent agent) {
 
-    StorageConfig storageConfig = job.getStorageConfig();
+    AgenticFlinkConfig storageConfig = job.getStorageConfig();
 
-    // TODO: Phase 4 - Implement tiered storage with async I/O
+    // Phase 4 (not yet implemented): Tiered storage with async I/O
     // For now, just pass through
     LOG.debug("Storage wiring deferred to Phase 4 for agent: {}", agent.getAgentId());
 

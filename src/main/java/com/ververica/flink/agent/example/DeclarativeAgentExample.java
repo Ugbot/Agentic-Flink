@@ -6,7 +6,7 @@ import com.ververica.flink.agent.dsl.Agent;
 import com.ververica.flink.agent.dsl.Agent.AgentType;
 import com.ververica.flink.agent.job.AgentJob;
 import com.ververica.flink.agent.job.AgentJobGenerator;
-import com.ververica.flink.agent.storage.AgentStorageFactory.StorageConfig;
+import com.ververica.flink.agent.config.AgenticFlinkConfig;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.time.Duration;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -110,7 +110,7 @@ public class DeclarativeAgentExample {
         .withName("Research Pipeline")
         .withAgent(researchAgent)
         .withToolRegistry(toolRegistry)
-        .withStorageConfig(StorageConfig.inMemory())  // In-memory for demo
+        .withAgenticFlinkConfig(AgenticFlinkConfig.forTesting())  // In-memory for demo
         .build();
 
     System.out.println("✅ Agent job created: " + job.getJobId());

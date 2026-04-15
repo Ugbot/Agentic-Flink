@@ -1,11 +1,12 @@
 package com.ververica.flink.agent.context.inverse;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.compaction.CompactionResult;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.tools.rag.DocumentIngestionToolExecutor;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -26,15 +27,15 @@ public class InverseRagFunction
   private transient DocumentIngestionToolExecutor ingestionExecutor;
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
 
     // Initialize document ingestion tool
     Map<String, String> config = new HashMap<>();
-    config.put("baseUrl", "http://localhost:11434");
+    config.put("baseUrl", ConfigKeys.DEFAULT_OLLAMA_BASE_URL);
     config.put("modelName", "nomic-embed-text:latest");
-    config.put("host", "localhost");
-    config.put("port", "6333");
+    config.put("host", ConfigKeys.DEFAULT_QDRANT_HOST);
+    config.put("port", ConfigKeys.DEFAULT_QDRANT_PORT);
     config.put("collectionName", "agent-long-term-memory");
 
     this.ingestionExecutor = new DocumentIngestionToolExecutor(config);

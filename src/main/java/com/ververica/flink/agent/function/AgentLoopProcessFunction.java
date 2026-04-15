@@ -5,7 +5,7 @@ import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.core.AgentExecutionState;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
@@ -24,7 +24,7 @@ public class AgentLoopProcessFunction extends KeyedProcessFunction<String, Agent
   private ValueState<AgentExecutionState> executionState;
 
   @Override
-  public void open(Configuration parameters) {
+  public void open(OpenContext openContext) {
     ValueStateDescriptor<AgentExecutionState> stateDescriptor =
         new ValueStateDescriptor<>("agentExecutionState", AgentExecutionState.class);
     executionState = getRuntimeContext().getState(stateDescriptor);

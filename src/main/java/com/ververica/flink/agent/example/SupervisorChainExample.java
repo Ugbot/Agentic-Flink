@@ -8,7 +8,7 @@ import com.ververica.flink.agent.dsl.SupervisorChain;
 import com.ververica.flink.agent.dsl.SupervisorChain.EscalationPolicy;
 import com.ververica.flink.agent.job.AgentJob;
 import com.ververica.flink.agent.job.AgentJobGenerator;
-import com.ververica.flink.agent.storage.AgentStorageFactory.StorageConfig;
+import com.ververica.flink.agent.config.AgenticFlinkConfig;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -195,7 +195,7 @@ public class SupervisorChainExample {
         .withName("Quality Control Pipeline")
         .withSupervisorChain(chain)  // Use supervisor chain instead of single agent!
         .withToolRegistry(toolRegistry)
-        .withStorageConfig(StorageConfig.inMemory())
+        .withAgenticFlinkConfig(AgenticFlinkConfig.forTesting())
         .build();
 
     System.out.println("✅ Agent job created:");

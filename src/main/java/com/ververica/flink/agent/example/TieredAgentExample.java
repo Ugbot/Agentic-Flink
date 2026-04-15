@@ -11,12 +11,12 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.output.Response;
 import java.time.Duration;
 import java.util.*;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
 import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.SimpleCondition;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
@@ -128,7 +128,7 @@ public class TieredAgentExample {
     private transient ChatLanguageModel model;
 
     @Override
-    public void open(Configuration parameters) throws Exception {
+    public void open(OpenContext openContext) throws Exception {
       System.out.println("\n[ValidationAgent] Initializing with Ollama...");
 
       try {
@@ -219,7 +219,7 @@ public class TieredAgentExample {
     private transient CalculatorTools calculator;
 
     @Override
-    public void open(Configuration parameters) throws Exception {
+    public void open(OpenContext openContext) throws Exception {
       System.out.println("\n[ExecutionAgent] Initializing...");
 
       model = OllamaChatModel.builder()
@@ -342,7 +342,7 @@ public class TieredAgentExample {
     private transient ChatLanguageModel model;
 
     @Override
-    public void open(Configuration parameters) throws Exception {
+    public void open(OpenContext openContext) throws Exception {
       System.out.println("\n[SupervisorAgent] Initializing...");
 
       model = OllamaChatModel.builder()

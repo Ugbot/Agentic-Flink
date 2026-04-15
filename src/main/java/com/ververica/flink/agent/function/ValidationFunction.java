@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 import org.slf4j.Logger;
@@ -51,8 +51,8 @@ public class ValidationFunction extends RichAsyncFunction<AgentEvent, AgentEvent
   }
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
     this.langChainAsyncClient =
         new LangChainAsyncClient(
             List.of(

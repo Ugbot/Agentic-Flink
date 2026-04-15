@@ -7,8 +7,8 @@ import com.ververica.flink.agent.execution.AgentExecutor;
 import com.ververica.flink.agent.execution.ExecutionResult;
 import com.ververica.flink.agent.execution.LLMClient;
 import com.ververica.flink.agent.tool.ToolRegistry;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +53,8 @@ public class AgentFlatMapFunction extends RichFlatMapFunction<AgentEvent, AgentE
   }
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
 
     LOG.info("Initializing AgentExecutor for agent: {}", agent.getAgentId());
 

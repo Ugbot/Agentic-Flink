@@ -5,10 +5,10 @@ import com.ververica.flink.agent.core.AgentEventType;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.Duration;
 import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.IterativeCondition;
 import org.apache.flink.cep.pattern.conditions.SimpleCondition;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
  * Defines the complete agent state machine with all states and valid transitions.
@@ -251,7 +251,7 @@ public class AgentStateMachine implements Serializable {
 
     // Apply global timeout if configured
     if (globalTimeoutSeconds > 0) {
-      pattern = pattern.within(Time.seconds(globalTimeoutSeconds));
+      pattern = pattern.within(Duration.ofSeconds(globalTimeoutSeconds));
     }
 
     return pattern;
@@ -337,7 +337,7 @@ public class AgentStateMachine implements Serializable {
     }
 
     if (globalTimeoutSeconds > 0) {
-      pattern = pattern.within(Time.seconds(globalTimeoutSeconds));
+      pattern = pattern.within(Duration.ofSeconds(globalTimeoutSeconds));
     }
 
     return pattern;

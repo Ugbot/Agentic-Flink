@@ -54,7 +54,8 @@ public class InMemoryShortTermStore implements ShortTermMemoryStore {
   private static final Logger LOG = LoggerFactory.getLogger(InMemoryShortTermStore.class);
 
   // Using ConcurrentHashMap as base storage
-  // TODO: Replace with Caffeine cache for production with proper eviction
+  // ConcurrentHashMap is sufficient for development and testing.
+  // For production with high-throughput eviction, consider Caffeine cache.
   private transient ConcurrentHashMap<String, List<ContextItem>> storage;
   private transient ConcurrentHashMap<String, Long> expirationTimes;
 

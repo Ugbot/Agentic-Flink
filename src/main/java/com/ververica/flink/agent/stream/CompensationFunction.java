@@ -8,7 +8,7 @@ import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 import org.slf4j.Logger;
@@ -42,8 +42,8 @@ public class CompensationFunction extends RichAsyncFunction<AgentEvent, AgentEve
   }
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
     LOG.info("Initializing CompensationHandler");
     compensationHandler = new CompensationHandler(toolRegistry);
     LOG.info("CompensationHandler initialized");

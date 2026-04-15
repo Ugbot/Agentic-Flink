@@ -7,7 +7,6 @@ import java.time.Duration;
 import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.IterativeCondition;
 import org.apache.flink.cep.pattern.conditions.SimpleCondition;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
  * Fluent builder for creating Apache Flink CEP patterns for agent workflows.
@@ -151,7 +150,7 @@ public class CepPatternBuilder {
 
     // Apply global timeout if set
     if (globalTimeout != null) {
-      pattern = pattern.within(Time.milliseconds(globalTimeout.toMillis()));
+      pattern = pattern.within(globalTimeout);
     }
 
     return pattern;

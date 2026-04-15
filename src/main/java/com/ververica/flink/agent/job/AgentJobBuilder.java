@@ -1,10 +1,10 @@
 package com.ververica.flink.agent.job;
 
+import com.ververica.flink.agent.config.AgenticFlinkConfig;
 import com.ververica.flink.agent.dsl.Agent;
 import com.ververica.flink.agent.dsl.SupervisorChain;
 import com.ververica.flink.agent.job.AgentJob.MonitoringConfig;
 import com.ververica.flink.agent.job.AgentJob.RoutingConfig;
-import com.ververica.flink.agent.storage.AgentStorageFactory.StorageConfig;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.util.*;
 
@@ -30,7 +30,7 @@ import java.util.*;
  *     .withAgent(executorAgent)
  *     .withAgent(validatorAgent)
  *     .withToolRegistry(toolRegistry)
- *     .withStorageConfig(storageConfig)
+ *     .withAgenticFlinkConfig(storageConfig)
  *     .withRoutingConfig(RoutingConfig.kafka(
  *         "localhost:9092",
  *         "agent-input",
@@ -50,7 +50,7 @@ public class AgentJobBuilder {
   List<Agent> agents = new ArrayList<>();
   SupervisorChain supervisorChain;
   ToolRegistry toolRegistry;
-  StorageConfig storageConfig;
+  AgenticFlinkConfig storageConfig;
   RoutingConfig routingConfig = RoutingConfig.internal();  // Default to internal routing
   MonitoringConfig monitoringConfig = MonitoringConfig.defaults();  // Default monitoring
   Map<String, Object> jobProperties = new HashMap<>();
@@ -143,7 +143,7 @@ public class AgentJobBuilder {
    * @param storageConfig The storage config
    * @return this builder
    */
-  public AgentJobBuilder withStorageConfig(StorageConfig storageConfig) {
+  public AgentJobBuilder withAgenticFlinkConfig(AgenticFlinkConfig storageConfig) {
     this.storageConfig = storageConfig;
     return this;
   }
@@ -310,12 +310,12 @@ public class AgentJobBuilder {
       String jobId,
       Agent agent,
       ToolRegistry toolRegistry,
-      StorageConfig storageConfig) {
+      AgenticFlinkConfig storageConfig) {
     return AgentJob.builder()
         .withId(jobId)
         .withAgent(agent)
         .withToolRegistry(toolRegistry)
-        .withStorageConfig(storageConfig)
+        .withAgenticFlinkConfig(storageConfig)
         .withRoutingConfig(RoutingConfig.internal())
         .withMonitoringConfig(MonitoringConfig.defaults())
         .build();

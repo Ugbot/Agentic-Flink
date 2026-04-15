@@ -21,6 +21,7 @@ com/ververica/flink/agent/langchain/client/LangChainEmbeddingAsyncClient.class
 com/ververica/flink/agent/compensation/CompensationHandler.class
 com/ververica/flink/agent/example/TieredAgentExample$ValidationAgent.class
 com/ververica/flink/agent/statemachine/AgentTransition.class
+com/ververica/flink/agent/config/AgenticFlinkConfig.class
 com/ververica/flink/agent/context/core/AgentContext.class
 com/ververica/flink/agent/statemachine/AgentStateMachine$6.class
 com/ververica/flink/agent/context/manager/ContextWindowManager.class
@@ -60,6 +61,7 @@ com/ververica/flink/agent/job/AgentJobGenerator.class
 com/ververica/flink/agent/storage/redis/RedisShortTermStore$1.class
 com/ververica/flink/agent/langchain/model/embedding/DefaultEmbeddingModel.class
 com/ververica/flink/agent/context/memory/ShortTermMemory.class
+com/ververica/flink/agent/config/ConfigKeys.class
 com/ververica/flink/agent/example/SimpleAgentExample.class
 com/ververica/flink/agent/cep/CepPatternBuilder.class
 com/ververica/flink/agent/core/ToolCallHistory.class
@@ -107,7 +109,6 @@ com/ververica/flink/agent/dsl/Agent$AgentType.class
 com/ververica/flink/agent/storage/redis/RedisShortTermStore.class
 com/ververica/flink/agent/tool/ToolRegistry$ToolRegistryBuilder.class
 com/ververica/flink/agent/statemachine/AgentStateMachine$3.class
-com/ververica/flink/agent/storage/AgentStorageFactory.class
 com/ververica/flink/agent/function/CorrectionFunction.class
 com/ververica/flink/agent/statemachine/AgentTransition$Builder.class
 com/ververica/flink/agent/completion/TaskList$Builder.class
@@ -173,7 +174,6 @@ com/ververica/flink/agent/storage/memory/InMemoryShortTermStore.class
 com/ververica/flink/agent/pattern/AgentCEPPattern$1.class
 com/ververica/flink/agent/dsl/Agent.class
 com/ververica/flink/agent/function/ToolCallAsyncFunctionV2.class
-com/ververica/flink/agent/storage/AgentStorageFactory$StorageConfig.class
 com/ververica/flink/agent/job/AgentJobBuilder.class
 com/ververica/flink/agent/langchain/config/LLMConfig.class
 com/ververica/flink/agent/example/TieredAgentExample$1.class

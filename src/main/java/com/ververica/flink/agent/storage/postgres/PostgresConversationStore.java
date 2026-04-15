@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.core.AgentContext;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.storage.LongTermMemoryStore;

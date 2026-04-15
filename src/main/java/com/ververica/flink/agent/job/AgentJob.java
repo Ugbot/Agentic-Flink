@@ -1,8 +1,8 @@
 package com.ververica.flink.agent.job;
 
+import com.ververica.flink.agent.config.AgenticFlinkConfig;
 import com.ververica.flink.agent.dsl.Agent;
 import com.ververica.flink.agent.dsl.SupervisorChain;
-import com.ververica.flink.agent.storage.AgentStorageFactory.StorageConfig;
 import com.ververica.flink.agent.tool.ToolRegistry;
 import java.io.Serializable;
 import java.util.*;
@@ -15,7 +15,7 @@ import java.util.*;
  *   <li>One or more Agent definitions</li>
  *   <li>Optional SupervisorChain for tiered review</li>
  *   <li>ToolRegistry for tool execution</li>
- *   <li>StorageConfig for persistence (PostgreSQL, Redis)</li>
+ *   <li>AgenticFlinkConfig for persistence (PostgreSQL, Redis)</li>
  *   <li>Routing configuration (internal vs Kafka)</li>
  *   <li>Monitoring and observability settings</li>
  * </ul>
@@ -26,7 +26,7 @@ import java.util.*;
  *     .withId("research-job")
  *     .withAgent(researchAgent)
  *     .withToolRegistry(toolRegistry)
- *     .withStorageConfig(storageConfig)
+ *     .withAgenticFlinkConfig(storageConfig)
  *     .build();
  * }</pre>
  *
@@ -54,7 +54,7 @@ import java.util.*;
  *     .withId("quality-job")
  *     .withSupervisorChain(chain)
  *     .withToolRegistry(toolRegistry)
- *     .withStorageConfig(storageConfig)
+ *     .withAgenticFlinkConfig(storageConfig)
  *     .build();
  * }</pre>
  *
@@ -72,7 +72,7 @@ public class AgentJob implements Serializable {
   private final List<Agent> agents;
   private final SupervisorChain supervisorChain;
   private final ToolRegistry toolRegistry;
-  private final StorageConfig storageConfig;
+  private final AgenticFlinkConfig storageConfig;
   private final RoutingConfig routingConfig;
   private final MonitoringConfig monitoringConfig;
   private final Map<String, Object> jobProperties;
@@ -97,7 +97,7 @@ public class AgentJob implements Serializable {
   public List<Agent> getAgents() { return agents; }
   public SupervisorChain getSupervisorChain() { return supervisorChain; }
   public ToolRegistry getToolRegistry() { return toolRegistry; }
-  public StorageConfig getStorageConfig() { return storageConfig; }
+  public AgenticFlinkConfig getStorageConfig() { return storageConfig; }
   public RoutingConfig getRoutingConfig() { return routingConfig; }
   public MonitoringConfig getMonitoringConfig() { return monitoringConfig; }
   public Map<String, Object> getJobProperties() { return jobProperties; }
@@ -160,7 +160,7 @@ public class AgentJob implements Serializable {
         .withAgents(this.agents)
         .withSupervisorChain(this.supervisorChain)
         .withToolRegistry(this.toolRegistry)
-        .withStorageConfig(this.storageConfig)
+        .withAgenticFlinkConfig(this.storageConfig)
         .withRoutingConfig(this.routingConfig)
         .withMonitoringConfig(this.monitoringConfig);
   }

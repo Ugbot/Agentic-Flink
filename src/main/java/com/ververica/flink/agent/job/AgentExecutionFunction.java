@@ -88,7 +88,7 @@ public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, A
 
     LOG.info("Processing agent execution for flow: {}", flowId);
 
-    // TODO: Phase 3 - Implement full agent execution logic
+    // Phase 3 (not yet implemented): Full agent execution logic
     // This is a placeholder that demonstrates the structure
     // Full implementation will include:
     // - LLM calls via LangChain4J
@@ -155,7 +155,7 @@ public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, A
   /**
    * Creates a completion event from the execution results.
    *
-   * <p>TODO: Phase 3 - This will aggregate results from tool calls, validation, etc.
+   * <p>Phase 3 (not yet implemented): This will aggregate results from tool calls, validation, etc.
    */
   private AgentEvent createCompletionEvent(
       AgentEvent startEvent, List<AgentEvent> executionEvents) {
@@ -164,7 +164,7 @@ public class AgentExecutionFunction extends PatternProcessFunction<AgentEvent, A
     completionEvent.incrementIteration();
     completionEvent.putMetadata("state", AgentState.COMPLETED.name());
 
-    // TODO: Aggregate execution results
+    // Phase 3 (not yet implemented): Aggregate execution results
     if (executionEvents != null && !executionEvents.isEmpty()) {
       completionEvent.getData().put("execution_count", executionEvents.size());
       completionEvent.getData().put("last_execution", executionEvents.get(executionEvents.size() - 1).getData());

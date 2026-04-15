@@ -8,7 +8,6 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/storage/metrics/StorageMetrics.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/execution/ExecutionContext.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/job/SupervisorTierFunction.java
-/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/storage/AgentStorageFactory.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/model/language/OpenAiLanguageModel.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/memory/LongTermMemory.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/compensation/CompensationResult.java
@@ -44,6 +43,7 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/memory/SteeringState.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/execution/AgentExecutor.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/tools/rag/SemanticSearchToolExecutor.java
+/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/config/ConfigKeys.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/execution/ToolCallResult.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/serde/ControlCommand.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/PromptTemplateManager.java
@@ -51,6 +51,7 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/compaction/ContextCompactionFunction.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/storage/SteeringStateStore.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/example/StreamingAgentExample.java
+/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/config/AgenticFlinkConfig.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/function/SupervisorReviewFunction.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/model/language/DefaultLanguageModel.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/ToolAnnotationRegistry.java

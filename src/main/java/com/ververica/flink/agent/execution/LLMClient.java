@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.execution;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import dev.langchain4j.data.message.*;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -329,10 +330,10 @@ public class LLMClient implements Serializable {
   // ==================== Builder ====================
 
   public static class LLMClientBuilder {
-    private String modelName = "qwen2.5:3b";
+    private String modelName = ConfigKeys.DEFAULT_OLLAMA_MODEL;
     private double temperature = 0.7;
     private int maxTokens = 4000;
-    private String baseUrl = "http://localhost:11434";
+    private String baseUrl = ConfigKeys.DEFAULT_OLLAMA_BASE_URL;
     private Duration timeout = Duration.ofSeconds(60);
 
     public LLMClientBuilder withModel(String modelName) {

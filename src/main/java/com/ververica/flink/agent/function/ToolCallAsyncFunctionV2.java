@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 import org.slf4j.Logger;
@@ -36,8 +36,8 @@ public class ToolCallAsyncFunctionV2 extends RichAsyncFunction<ToolCallRequest, 
   }
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
     LOG.info("ToolCallAsyncFunctionV2 opened with {} executors", executorRegistry.size());
   }
 

@@ -13,7 +13,7 @@ import com.ververica.flink.agent.storage.metrics.MetricsWrapper;
 import com.ververica.flink.agent.storage.metrics.StorageMetrics;
 import java.util.*;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
@@ -172,8 +172,8 @@ public class StorageIntegratedFlinkJob {
     }
 
     @Override
-    public void open(Configuration parameters) throws Exception {
-      super.open(parameters);
+    public void open(OpenContext openContext) throws Exception {
+      super.open(openContext);
 
       // Initialize storage
       this.hotStore = storageConfig.createShortTermStore();

@@ -1,12 +1,13 @@
 package com.ververica.flink.agent.context.inverse;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.tools.rag.DocumentIngestionToolExecutor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 import org.slf4j.Logger;
@@ -81,8 +82,8 @@ public class QdrantAsyncFunction
   }
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
 
     // Initialize document ingestion tool for Qdrant
     this.ingestionExecutor = new DocumentIngestionToolExecutor(qdrantConfig);
@@ -206,10 +207,10 @@ public class QdrantAsyncFunction
   /** Creates default Qdrant configuration. */
   private static Map<String, String> createDefaultConfig() {
     Map<String, String> config = new HashMap<>();
-    config.put("baseUrl", "http://localhost:11434"); // Ollama for embeddings
+    config.put("baseUrl", ConfigKeys.DEFAULT_OLLAMA_BASE_URL); // Ollama for embeddings
     config.put("modelName", "nomic-embed-text:latest");
-    config.put("host", "localhost"); // Qdrant host
-    config.put("port", "6333"); // Qdrant port
+    config.put("host", ConfigKeys.DEFAULT_QDRANT_HOST); // Qdrant host
+    config.put("port", ConfigKeys.DEFAULT_QDRANT_PORT); // Qdrant port
     config.put("collectionName", "agent-long-term-memory");
     return config;
   }

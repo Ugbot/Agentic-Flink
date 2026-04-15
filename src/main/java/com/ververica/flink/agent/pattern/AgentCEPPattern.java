@@ -2,9 +2,9 @@ package com.ververica.flink.agent.pattern;
 
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
+import java.time.Duration;
 import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.IterativeCondition;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
 public class AgentCEPPattern {
 
@@ -28,7 +28,7 @@ public class AgentCEPPattern {
         .greedy()
         .next(AgentPatternName.VALIDATION_STAGE.name())
         .where(new EventTypeCondition(AgentEventType.VALIDATION_REQUESTED))
-        .within(Time.minutes(30)); // Overall workflow timeout
+        .within(Duration.ofMinutes(30)); // Overall workflow timeout
   }
 
   /**
@@ -49,7 +49,7 @@ public class AgentCEPPattern {
                 return event.getIterationNumber() < maxIterations;
               }
             })
-        .within(Time.minutes(5));
+        .within(Duration.ofMinutes(5));
   }
 
   /**
@@ -69,7 +69,7 @@ public class AgentCEPPattern {
                     || event.getEventType() == AgentEventType.FLOW_RESUMED;
               }
             })
-        .within(Time.minutes(30)); // 30 minutes of inactivity
+        .within(Duration.ofMinutes(30)); // 30 minutes of inactivity
   }
 
   /**
@@ -79,7 +79,7 @@ public class AgentCEPPattern {
     // NOTE: Simplified to only match ERROR_OCCURRED. For TIMEOUT_OCCURRED, use a separate pattern.
     return Pattern.<AgentEvent>begin(AgentPatternName.ERROR_STATE.name())
         .where(new EventTypeCondition(AgentEventType.ERROR_OCCURRED))
-        .within(Time.seconds(5));
+        .within(Duration.ofSeconds(5));
   }
 
   /**
@@ -98,7 +98,7 @@ public class AgentCEPPattern {
         .where(new EventTypeCondition(AgentEventType.VALIDATION_PASSED))
         .next(AgentPatternName.FLOW_COMPLETED.name())
         .where(new EventTypeCondition(AgentEventType.FLOW_COMPLETED))
-        .within(Time.minutes(10));
+        .within(Duration.ofMinutes(10));
   }
 
   /** Reusable condition for matching event types */

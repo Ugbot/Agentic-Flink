@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.context.compaction;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.core.AgentContext;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.context.core.ContextPriority;
@@ -7,7 +8,7 @@ import com.ververica.flink.agent.context.core.ContextWindow;
 import com.ververica.flink.agent.context.relevancy.RelevancyScorer;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -37,12 +38,12 @@ public class ContextCompactionFunction
   }
 
   @Override
-  public void open(Configuration parameters) throws Exception {
-    super.open(parameters);
+  public void open(OpenContext openContext) throws Exception {
+    super.open(openContext);
 
     // Initialize relevancy scorer
     Map<String, String> config = new HashMap<>();
-    config.put("baseUrl", "http://localhost:11434");
+    config.put("baseUrl", ConfigKeys.DEFAULT_OLLAMA_BASE_URL);
     config.put("modelName", "nomic-embed-text:latest");
     this.relevancyScorer = new RelevancyScorer(config);
   }
