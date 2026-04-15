@@ -30,6 +30,7 @@ com/ververica/flink/agent/statemachine/AgentStateMachine$Builder.class
 com/ververica/flink/agent/langchain/model/language/OllamaLanguageModel.class
 com/ververica/flink/agent/langchain/store/LangChainEmbeddingStore.class
 com/ververica/flink/agent/statemachine/AgentTransition$SerializablePredicate.class
+com/ververica/flink/agent/example/ResearchPipelineExample.class
 com/ververica/flink/agent/tools/ToolExecutorRegistry.class
 com/ververica/flink/agent/storage/SteeringStateStore.class
 com/ververica/flink/agent/cep/PatternConditions$7.class
@@ -92,11 +93,13 @@ com/ververica/flink/agent/function/SupervisorReviewFunction.class
 com/ververica/flink/agent/cep/PatternConditions$12.class
 com/ververica/flink/agent/langchain/model/language/DefaultLanguageModel.class
 com/ververica/flink/agent/storage/LongTermMemoryStore.class
+com/ververica/flink/agent/job/ResearchPipelineJob.class
 com/ververica/flink/agent/execution/LLMClient$LLMClientBuilder.class
 com/ververica/flink/agent/example/TieredAgentExample$ExecutionAgent.class
 com/ververica/flink/agent/completion/CompletionTracker$1.class
 com/ververica/flink/agent/context/compaction/CompactionResult.class
 com/ververica/flink/agent/cep/PatternConditions.class
+com/ververica/flink/agent/function/DocumentIngestionFunction.class
 com/ververica/flink/agent/example/SupervisorChainExample.class
 com/ververica/flink/agent/statemachine/AgentStateMachine$1.class
 com/ververica/flink/agent/statemachine/AgentTransition$TransitionAction.class
@@ -183,6 +186,7 @@ com/ververica/flink/agent/function/ToolCallAsyncFunctionV2.class
 com/ververica/flink/agent/job/AgentJobBuilder.class
 com/ververica/flink/agent/langchain/config/LLMConfig.class
 com/ververica/flink/agent/example/TieredAgentExample$1.class
+com/ververica/flink/agent/function/SemanticSearchFunction.class
 com/ververica/flink/agent/job/AgentJobGenerator$1.class
 com/ververica/flink/agent/cep/PatternConditions$1.class
 com/ververica/flink/agent/context/memory/SteeringState.class

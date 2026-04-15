@@ -8,6 +8,7 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/stream/AgentExecutionStream.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/storage/metrics/StorageMetrics.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/execution/ExecutionContext.java
+/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/example/ResearchPipelineExample.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/job/SupervisorTierFunction.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/model/language/OpenAiLanguageModel.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/memory/LongTermMemory.java
@@ -17,6 +18,7 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/storage/redis/RedisConversationStore.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/core/AgentConfig.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/compaction/CompactionResult.java
+/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/function/DocumentIngestionFunction.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/core/MemoryType.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/compaction/CompactionRequest.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/compensation/CompensationHandler.java
@@ -57,6 +59,7 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/job/StorageSinkFunction.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/model/language/DefaultLanguageModel.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/ToolAnnotationRegistry.java
+/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/function/SemanticSearchFunction.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/serde/ToolCallResponse.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/client/LangChainEmbeddingAsyncClient.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/dsl/SupervisorChainBuilder.java
@@ -97,6 +100,7 @@
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/context/inverse/InverseRagResult.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/dsl/AgentBuilder.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/example/CompensationExample.java
+/Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/job/ResearchPipelineJob.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/langchain/store/DefaultEmbeddingStore.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/core/AgentFlowState.java
 /Users/bengamble/Agentic-Flink/src/main/java/com/ververica/flink/agent/example/ToolExecutionExample.java

@@ -35,6 +35,14 @@ public class DocumentIngestionToolExecutor extends AbstractToolExecutor {
     this.embeddingStoreProvider = new QdrantEmbeddingStore();
   }
 
+  public DocumentIngestionToolExecutor(Map<String, String> config,
+      LangChainEmbeddingModel embeddingModel, LangChainEmbeddingStore embeddingStore) {
+    super("document_ingestion", "Ingest documents into the knowledge base");
+    this.config = config != null ? config : new HashMap<>();
+    this.embeddingModelProvider = embeddingModel;
+    this.embeddingStoreProvider = embeddingStore;
+  }
+
   @Override
   public CompletableFuture<Object> execute(Map<String, Object> parameters) {
     logExecution(parameters);

@@ -43,6 +43,16 @@ public class RagToolExecutor extends AbstractToolExecutor {
     this.languageModelProvider = new OllamaLanguageModel();
   }
 
+  public RagToolExecutor(Map<String, String> config,
+      LangChainEmbeddingModel embeddingModel, LangChainEmbeddingStore embeddingStore,
+      LangChainLanguageModel languageModel) {
+    super("rag", "Retrieval-Augmented Generation - searches knowledge base and generates answers");
+    this.config = config != null ? config : new HashMap<>();
+    this.embeddingModelProvider = embeddingModel;
+    this.embeddingStoreProvider = embeddingStore;
+    this.languageModelProvider = languageModel;
+  }
+
   @Override
   public CompletableFuture<Object> execute(Map<String, Object> parameters) {
     logExecution(parameters);

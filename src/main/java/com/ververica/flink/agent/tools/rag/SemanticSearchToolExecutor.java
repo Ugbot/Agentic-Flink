@@ -34,6 +34,14 @@ public class SemanticSearchToolExecutor extends AbstractToolExecutor {
     this.embeddingStoreProvider = new QdrantEmbeddingStore();
   }
 
+  public SemanticSearchToolExecutor(Map<String, String> config,
+      LangChainEmbeddingModel embeddingModel, LangChainEmbeddingStore embeddingStore) {
+    super("semantic_search", "Search knowledge base using semantic similarity");
+    this.config = config != null ? config : new HashMap<>();
+    this.embeddingModelProvider = embeddingModel;
+    this.embeddingStoreProvider = embeddingStore;
+  }
+
   @Override
   public CompletableFuture<Object> execute(Map<String, Object> parameters) {
     logExecution(parameters);
