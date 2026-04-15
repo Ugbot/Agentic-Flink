@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.example;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.tools.builtin.CalculatorTools;
@@ -133,8 +134,8 @@ public class TieredAgentExample {
 
       try {
         model = OllamaChatModel.builder()
-            .baseUrl("http://localhost:11434")
-            .modelName("qwen2.5:3b")
+            .baseUrl(ConfigKeys.DEFAULT_OLLAMA_BASE_URL)
+            .modelName(ConfigKeys.DEFAULT_OLLAMA_MODEL)
             .temperature(0.3)
             .timeout(Duration.ofSeconds(30))
             .build();
@@ -223,8 +224,8 @@ public class TieredAgentExample {
       System.out.println("\n[ExecutionAgent] Initializing...");
 
       model = OllamaChatModel.builder()
-          .baseUrl("http://localhost:11434")
-          .modelName("qwen2.5:3b")
+          .baseUrl(ConfigKeys.DEFAULT_OLLAMA_BASE_URL)
+          .modelName(ConfigKeys.DEFAULT_OLLAMA_MODEL)
           .temperature(0.1) // Lower temperature for accurate calculations
           .timeout(Duration.ofSeconds(30))
           .build();
@@ -346,8 +347,8 @@ public class TieredAgentExample {
       System.out.println("\n[SupervisorAgent] Initializing...");
 
       model = OllamaChatModel.builder()
-          .baseUrl("http://localhost:11434")
-          .modelName("qwen2.5:3b")
+          .baseUrl(ConfigKeys.DEFAULT_OLLAMA_BASE_URL)
+          .modelName(ConfigKeys.DEFAULT_OLLAMA_MODEL)
           .temperature(0.2)
           .timeout(Duration.ofSeconds(30))
           .build();

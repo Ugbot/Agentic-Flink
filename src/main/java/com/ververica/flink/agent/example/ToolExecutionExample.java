@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.example;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
 import com.ververica.flink.agent.dsl.Agent;
@@ -95,7 +96,7 @@ public class ToolExecutionExample {
     LLMClient llmClient = LLMClient.builder()
         .withModel("qwen2.5:3b")
         .withTemperature(0.3)
-        .withBaseUrl("http://localhost:11434")
+        .withBaseUrl(ConfigKeys.DEFAULT_OLLAMA_BASE_URL)
         .build();
 
     System.out.println("✅ LLM client created (Ollama @ localhost:11434)");

@@ -93,8 +93,8 @@ public class PostgresConversationStore implements LongTermMemoryStore {
   @Override
   public void initialize(Map<String, String> config) throws Exception {
     this.jdbcUrl = config.getOrDefault(
-        "postgres.url", "jdbc:postgresql://localhost:5432/flink_agents");
-    this.username = config.getOrDefault("postgres.user", "postgres");
+        ConfigKeys.POSTGRES_URL, ConfigKeys.DEFAULT_POSTGRES_URL);
+    this.username = config.getOrDefault(ConfigKeys.POSTGRES_USER, ConfigKeys.DEFAULT_POSTGRES_USER);
     this.password = config.get("postgres.password");
     this.autoCreateTables = Boolean.parseBoolean(
         config.getOrDefault("postgres.auto.create.tables", "true"));

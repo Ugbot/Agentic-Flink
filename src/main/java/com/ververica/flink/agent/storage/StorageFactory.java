@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
  * Factory for creating storage provider instances.
  *
  * <p>This factory provides a centralized way to create and configure storage backends for
- * different tiers (HOT, WARM, COLD, VECTOR). It supports multiple backend implementations per tier
- * and handles initialization.
+ * different tiers (HOT, WARM). It supports multiple backend implementations per tier and handles
+ * initialization.
  *
  * <p>Usage example:
  *
@@ -35,10 +35,8 @@ import org.slf4j.LoggerFactory;
  * <p>Supported backends:
  *
  * <ul>
- *   <li>Short-term (HOT): "memory", "redis", "hazelcast"
- *   <li>Long-term (WARM): "memory", "redis", "postgresql", "dynamodb", "cassandra", "mongodb"
- *   <li>Cold (COLD): "s3", "clickhouse"
- *   <li>Vector (VECTOR): "qdrant", "pinecone", "weaviate", "pgvector"
+ *   <li>Short-term (HOT): "memory", "redis"
+ *   <li>Long-term (WARM): "memory", "redis", "postgresql"
  * </ul>
  *
  * @author Agentic Flink Team
@@ -55,7 +53,6 @@ public class StorageFactory {
    * <ul>
    *   <li>"memory" - In-memory ConcurrentHashMap with TTL
    *   <li>"redis" - Redis with Jedis client
-   *   <li>"hazelcast" - Hazelcast IMDG (not yet implemented)
    * </ul>
    *
    * @param backend Backend identifier
@@ -87,14 +84,9 @@ public class StorageFactory {
         store = new RedisShortTermStore();
         break;
 
-      case "hazelcast":
-        throw new UnsupportedOperationException(
-            "Hazelcast backend not yet implemented. Use 'memory' or 'redis'.");
-
       default:
         throw new IllegalArgumentException(
-            "Unknown short-term store backend: " + backend
-                + ". Supported: memory, redis, hazelcast");
+            "Unknown short-term store backend: " + backend + ". Supported: memory, redis");
     }
 
     store.initialize(config);
@@ -111,9 +103,6 @@ public class StorageFactory {
    *   <li>"memory" - In-memory conversation storage (for testing/development)
    *   <li>"redis" - Redis with conversation persistence
    *   <li>"postgresql" - PostgreSQL with ACID guarantees
-   *   <li>"dynamodb" - AWS DynamoDB (not yet implemented)
-   *   <li>"cassandra" - Apache Cassandra (not yet implemented)
-   *   <li>"mongodb" - MongoDB (not yet implemented)
    * </ul>
    *
    * @param backend Backend identifier
@@ -150,22 +139,11 @@ public class StorageFactory {
         store = new PostgresConversationStore();
         break;
 
-      case "dynamodb":
-        throw new UnsupportedOperationException(
-            "DynamoDB backend not yet implemented. Use 'memory', 'redis', or 'postgresql'.");
-
-      case "cassandra":
-        throw new UnsupportedOperationException(
-            "Cassandra backend not yet implemented. Use 'memory', 'redis', or 'postgresql'.");
-
-      case "mongodb":
-        throw new UnsupportedOperationException(
-            "MongoDB backend not yet implemented. Use 'memory', 'redis', or 'postgresql'.");
-
       default:
         throw new IllegalArgumentException(
-            "Unknown long-term store backend: " + backend
-                + ". Supported: memory, redis, postgresql, dynamodb, cassandra, mongodb");
+            "Unknown long-term store backend: "
+                + backend
+                + ". Supported: memory, redis, postgresql");
     }
 
     store.initialize(config);
@@ -291,20 +269,16 @@ public class StorageFactory {
   public static String[] getAvailableBackends(StorageTier tier) {
     switch (tier) {
       case HOT:
-        return new String[] {"memory", "redis"}; // "hazelcast" planned
+        return new String[] {"memory", "redis"};
 
       case WARM:
-        return new String[] {"memory", "redis", "postgresql"}; // "dynamodb", "cassandra", "mongodb" planned
-
-      case COLD:
-        return new String[] {}; // "s3", "clickhouse" planned
-
-      case VECTOR:
-        return new String[] {}; // "qdrant", "pinecone", "weaviate", "pgvector" planned
+        return new String[] {"memory", "redis", "postgresql"};
 
       case CHECKPOINT:
         return new String[] {"rocksdb", "hashmap"}; // Managed by Flink
 
+      case COLD:
+      case VECTOR:
       default:
         return new String[] {};
     }

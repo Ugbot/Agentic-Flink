@@ -2,6 +2,7 @@ package com.ververica.flink.agent.storage.redis;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.core.AgentContext;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.storage.LongTermMemoryStore;
@@ -83,9 +84,9 @@ public class RedisConversationStore implements LongTermMemoryStore {
 
   @Override
   public void initialize(Map<String, String> config) throws Exception {
-    this.host = config.getOrDefault("redis.host", "localhost");
-    this.port = Integer.parseInt(config.getOrDefault("redis.port", "6379"));
-    this.password = config.get("redis.password");
+    this.host = config.getOrDefault(ConfigKeys.REDIS_HOST, ConfigKeys.DEFAULT_REDIS_HOST);
+    this.port = Integer.parseInt(config.getOrDefault(ConfigKeys.REDIS_PORT, ConfigKeys.DEFAULT_REDIS_PORT));
+    this.password = config.get(ConfigKeys.REDIS_PASSWORD);
     this.database = Integer.parseInt(config.getOrDefault("redis.database", "0"));
     this.defaultTTLSeconds =
         Long.parseLong(config.getOrDefault("redis.ttl.seconds", "86400")); // 24 hours

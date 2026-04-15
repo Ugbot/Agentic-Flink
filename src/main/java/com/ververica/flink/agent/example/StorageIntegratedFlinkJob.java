@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.example;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.core.AgentContext;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.context.core.ContextPriority;
@@ -106,16 +107,16 @@ public class StorageIntegratedFlinkJob {
 
     if ("redis".equalsIgnoreCase(backend)) {
       // Redis HOT tier configuration
-      hotConfig.put("redis.host", "localhost");
-      hotConfig.put("redis.port", "6379");
+      hotConfig.put(ConfigKeys.REDIS_HOST, ConfigKeys.DEFAULT_REDIS_HOST);
+      hotConfig.put(ConfigKeys.REDIS_PORT, ConfigKeys.DEFAULT_REDIS_PORT);
       hotConfig.put("redis.database", "0");
       hotConfig.put("redis.ttl.seconds", "3600"); // 1 hour
       hotConfig.put("redis.pool.max.total", "20");
       hotConfig.put("redis.pool.max.idle", "5");
 
       // Redis WARM tier configuration
-      warmConfig.put("redis.host", "localhost");
-      warmConfig.put("redis.port", "6379");
+      warmConfig.put(ConfigKeys.REDIS_HOST, ConfigKeys.DEFAULT_REDIS_HOST);
+      warmConfig.put(ConfigKeys.REDIS_PORT, ConfigKeys.DEFAULT_REDIS_PORT);
       warmConfig.put("redis.database", "1"); // Different database
       warmConfig.put("redis.ttl.seconds", "86400"); // 24 hours
       warmConfig.put("redis.pool.max.total", "20");

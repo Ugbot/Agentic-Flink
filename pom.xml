@@ -193,6 +193,21 @@
             <version>2.2.224</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Testcontainers for integration tests -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.20.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.20.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -263,6 +278,16 @@
                 </executions>
             </plugin>
 
+            <!-- Maven Surefire Plugin - exclude integration tests by default -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <excludedGroups>integration</excludedGroups>
+                </configuration>
+            </plugin>
+
             <!-- Google Java Format Plugin -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
@@ -311,6 +336,24 @@
     </repositories>
 
     <profiles>
+        <!-- Profile for running integration tests (requires Podman/Docker) -->
+        <profile>
+            <id>integration-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.5</version>
+                        <configuration>
+                            <excludedGroups>none</excludedGroups>
+                            <groups>integration</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!-- Optional Flink Agents Plugin Profile -->
         <profile>
             <id>flink-agents</id>

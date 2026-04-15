@@ -1,7 +1,9 @@
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/storage/memory/InMemoryShortTermStoreTest.java
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/storage/integration/StorageHydrationIntegrationTest.java
+/Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/storage/memory/InMemoryLongTermStoreTest.java
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/integration/StandaloneToolExecutionIT.java
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/execution/ToolCallParsingTest.java
+/Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/config/AgenticFlinkConfigTest.java
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/storage/metrics/StorageMetricsTest.java
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/storage/redis/RedisShortTermStoreTest.java
 /Users/bengamble/Agentic-Flink/src/test/java/com/ververica/flink/agent/storage/postgres/PostgresConversationStoreTest.java

@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.dsl;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.completion.TaskList;
 import com.ververica.flink.agent.context.manager.ContextWindowManager;
 import com.ververica.flink.agent.dsl.Agent.AgentType;
@@ -59,7 +60,7 @@ public class AgentBuilder {
 
   // LLM configuration
   String systemPrompt;
-  String llmModel = "qwen2.5:3b";  // Default model
+  String llmModel = ConfigKeys.DEFAULT_OLLAMA_MODEL;  // Default model
   double temperature = 0.7;
   int maxTokens = 4000;
   int maxResponseTokens = 1000;

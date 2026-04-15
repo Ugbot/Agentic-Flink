@@ -2,6 +2,7 @@ package com.ververica.flink.agent.storage.redis;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.context.core.ContextItem;
 import com.ververica.flink.agent.storage.ShortTermMemoryStore;
 import com.ververica.flink.agent.storage.StorageTier;
@@ -95,9 +96,9 @@ public class RedisShortTermStore implements ShortTermMemoryStore {
   @Override
   public void initialize(Map<String, String> config) throws Exception {
     // Parse configuration
-    this.host = config.getOrDefault("redis.host", "localhost");
-    this.port = Integer.parseInt(config.getOrDefault("redis.port", "6379"));
-    this.password = config.get("redis.password"); // Optional
+    this.host = config.getOrDefault(ConfigKeys.REDIS_HOST, ConfigKeys.DEFAULT_REDIS_HOST);
+    this.port = Integer.parseInt(config.getOrDefault(ConfigKeys.REDIS_PORT, ConfigKeys.DEFAULT_REDIS_PORT));
+    this.password = config.get(ConfigKeys.REDIS_PASSWORD); // Optional
     this.database = Integer.parseInt(config.getOrDefault("redis.database", "0"));
     this.defaultTTLSeconds =
         Long.parseLong(config.getOrDefault("redis.ttl.seconds", "3600"));

@@ -8,20 +8,29 @@ import com.ververica.flink.agent.context.core.MemoryType;
 import com.ververica.flink.agent.storage.StorageTier;
 import java.util.*;
 import org.junit.jupiter.api.*;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Unit tests for RedisShortTermStore.
+ * Integration tests for RedisShortTermStore using Testcontainers.
  *
- * <p>NOTE: These tests require a running Redis instance.
- * Run with Docker: docker run -d -p 6379:6379 redis:7-alpine --requirepass test_password
+ * <p>These tests spin up a real Redis container via Testcontainers (works with Podman or Docker) and
+ * exercise the full RedisShortTermStore against it. Tagged with "integration" so they are excluded
+ * from default {@code mvn test} runs and only execute when the {@code integration-tests} profile is
+ * active.
  *
- * <p>Tests are marked with @Disabled by default to avoid breaking builds without Redis.
- * Enable them when you have Redis running locally or in CI/CD.
+ * <p>Run with: {@code mvn test -P integration-tests}
  *
  * @author Agentic Flink Team
  */
-@Disabled("Requires running Redis instance - enable for integration testing")
+@Tag("integration")
+@Testcontainers
 class RedisShortTermStoreTest {
+
+  @Container
+  static GenericContainer<?> redis =
+      new GenericContainer<>("redis:7-alpine").withExposedPorts(6379);
 
   private RedisShortTermStore store;
   private Map<String, String> config;
@@ -30,9 +39,8 @@ class RedisShortTermStoreTest {
   @BeforeEach
   void setUp() throws Exception {
     config = new HashMap<>();
-    config.put("redis.host", "localhost");
-    config.put("redis.port", "6379");
-    config.put("redis.password", "test_password");
+    config.put("redis.host", redis.getHost());
+    config.put("redis.port", String.valueOf(redis.getMappedPort(6379)));
     config.put("redis.database", "0");
     config.put("redis.ttl.seconds", "300");
 
@@ -45,7 +53,6 @@ class RedisShortTermStoreTest {
   @AfterEach
   void tearDown() throws Exception {
     if (store != null) {
-      // Clean up test data
       try {
         store.delete(testFlowId);
       } catch (Exception e) {
@@ -66,10 +73,10 @@ class RedisShortTermStoreTest {
   @Test
   @DisplayName("Should store and retrieve context items")
   void testPutAndGetItems() throws Exception {
-    List<ContextItem> items = Arrays.asList(
-        createTestItem("Message 1", ContextPriority.MUST),
-        createTestItem("Message 2", ContextPriority.SHOULD)
-    );
+    List<ContextItem> items =
+        Arrays.asList(
+            createTestItem("Message 1", ContextPriority.MUST),
+            createTestItem("Message 2", ContextPriority.SHOULD));
 
     store.putItems(testFlowId, items);
 
@@ -88,9 +95,7 @@ class RedisShortTermStoreTest {
   @Test
   @DisplayName("Should delete items")
   void testDelete() throws Exception {
-    List<ContextItem> items = Arrays.asList(
-        createTestItem("Message 1", ContextPriority.MUST)
-    );
+    List<ContextItem> items = Arrays.asList(createTestItem("Message 1", ContextPriority.MUST));
     store.putItems(testFlowId, items);
 
     assertTrue(store.exists(testFlowId));
@@ -104,21 +109,25 @@ class RedisShortTermStoreTest {
   @DisplayName("Should respect TTL")
   void testTTL() throws Exception {
     // Set short TTL for testing
-    config.put("redis.ttl.seconds", "2");
+    Map<String, String> shortTtlConfig = new HashMap<>();
+    shortTtlConfig.put("redis.host", redis.getHost());
+    shortTtlConfig.put("redis.port", String.valueOf(redis.getMappedPort(6379)));
+    shortTtlConfig.put("redis.database", "0");
+    shortTtlConfig.put("redis.ttl.seconds", "2");
+
     RedisShortTermStore shortTtlStore = new RedisShortTermStore();
-    shortTtlStore.initialize(config);
+    shortTtlStore.initialize(shortTtlConfig);
 
-    List<ContextItem> items = Arrays.asList(
-        createTestItem("Message 1", ContextPriority.MUST)
-    );
-    shortTtlStore.putItems(testFlowId, items);
+    String ttlFlowId = "test-ttl-" + UUID.randomUUID();
+    List<ContextItem> items = Arrays.asList(createTestItem("Message 1", ContextPriority.MUST));
+    shortTtlStore.putItems(ttlFlowId, items);
 
-    assertTrue(shortTtlStore.exists(testFlowId));
+    assertTrue(shortTtlStore.exists(ttlFlowId));
 
     // Wait for TTL expiration
     Thread.sleep(3000);
 
-    assertFalse(shortTtlStore.exists(testFlowId));
+    assertFalse(shortTtlStore.exists(ttlFlowId));
 
     shortTtlStore.close();
   }

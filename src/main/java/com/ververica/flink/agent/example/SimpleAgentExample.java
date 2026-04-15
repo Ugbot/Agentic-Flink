@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.example;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.core.*;
 import com.ververica.flink.agent.stream.AgentExecutionStream;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public class SimpleAgentExample {
     // LLM configuration
     config.setLlmModel("OLLAMA");
     config.setSystemPrompt("You are a helpful AI assistant that can use tools to complete tasks.");
-    config.addLlmProperty("baseUrl", "http://localhost:11434");
+    config.addLlmProperty("baseUrl", ConfigKeys.DEFAULT_OLLAMA_BASE_URL);
     config.addLlmProperty("modelName", "llama3.1:latest");
 
     // Execution limits

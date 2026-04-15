@@ -1,5 +1,6 @@
 package com.ververica.flink.agent.example;
 
+import com.ververica.flink.agent.config.ConfigKeys;
 import com.ververica.flink.agent.core.*;
 import com.ververica.flink.agent.function.ToolCallAsyncFunctionV2;
 import com.ververica.flink.agent.serde.ToolCallRequest;
@@ -119,10 +120,10 @@ public class RagAgentExample {
 
     // Configuration for tools (Ollama + Qdrant)
     Map<String, String> toolConfig = new HashMap<>();
-    toolConfig.put("baseUrl", "http://localhost:11434");
+    toolConfig.put("baseUrl", ConfigKeys.DEFAULT_OLLAMA_BASE_URL);
     toolConfig.put("modelName", "nomic-embed-text:latest");
-    toolConfig.put("host", "localhost");
-    toolConfig.put("port", "6333");
+    toolConfig.put("host", ConfigKeys.DEFAULT_QDRANT_HOST);
+    toolConfig.put("port", ConfigKeys.DEFAULT_QDRANT_PORT);
     toolConfig.put("collectionName", "ververica-agent-knowledge");
 
     // Register executors
