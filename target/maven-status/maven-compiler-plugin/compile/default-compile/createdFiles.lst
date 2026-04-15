@@ -29,6 +29,7 @@ com/ververica/flink/agent/context/manager/ContextWindowManager.class
 com/ververica/flink/agent/statemachine/AgentStateMachine$Builder.class
 com/ververica/flink/agent/langchain/model/language/OllamaLanguageModel.class
 com/ververica/flink/agent/langchain/store/LangChainEmbeddingStore.class
+com/ververica/flink/agent/statemachine/AgentTransition$SerializablePredicate.class
 com/ververica/flink/agent/tools/ToolExecutorRegistry.class
 com/ververica/flink/agent/storage/SteeringStateStore.class
 com/ververica/flink/agent/cep/PatternConditions$7.class

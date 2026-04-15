@@ -4,7 +4,6 @@ import com.ververica.flink.agent.core.AgentEvent;
 import com.ververica.flink.agent.core.AgentEventType;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 /**
  * Represents a valid state transition in the agent state machine.
@@ -39,10 +38,24 @@ public class AgentTransition implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Serializable predicate for guard conditions on transitions.
+   *
+   * <p>Plain {@code java.util.function.Predicate} does not extend {@code Serializable},
+   * which causes {@code NotSerializableException} when Flink serializes the function graph.
+   * This interface combines both contracts so lambda conditions survive serialization.
+   */
+  @FunctionalInterface
+  public interface SerializablePredicate<T> extends Serializable {
+    boolean test(T value);
+  }
+
+  private static final SerializablePredicate<AgentEvent> ALWAYS_TRUE = event -> true;
+
   private final AgentState fromState;
   private final AgentState toState;
   private final AgentEventType triggerEvent;
-  private final Predicate<AgentEvent> condition;
+  private final SerializablePredicate<AgentEvent> condition;
   private final TransitionAction action;
   private final String description;
   private final int priority; // Higher priority transitions checked first
@@ -52,7 +65,7 @@ public class AgentTransition implements Serializable {
     this.toState = Objects.requireNonNull(builder.toState, "toState cannot be null");
     this.triggerEvent =
         Objects.requireNonNull(builder.triggerEvent, "triggerEvent cannot be null");
-    this.condition = builder.condition != null ? builder.condition : event -> true;
+    this.condition = builder.condition != null ? builder.condition : ALWAYS_TRUE;
     this.action = builder.action;
     this.description = builder.description;
     this.priority = builder.priority;
@@ -127,7 +140,7 @@ public class AgentTransition implements Serializable {
     private AgentState fromState;
     private AgentState toState;
     private AgentEventType triggerEvent;
-    private Predicate<AgentEvent> condition;
+    private SerializablePredicate<AgentEvent> condition;
     private TransitionAction action;
     private String description;
     private int priority = 0;
@@ -175,7 +188,7 @@ public class AgentTransition implements Serializable {
      * @param condition Predicate that tests the event
      * @return this builder
      */
-    public Builder when(Predicate<AgentEvent> condition) {
+    public Builder when(SerializablePredicate<AgentEvent> condition) {
       this.condition = condition;
       return this;
     }
