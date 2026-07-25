@@ -3,8 +3,12 @@ name: Publish Python package to PyPI
 # Fires on every published GitHub Release.
 # Uses PyPI Trusted Publishing (OIDC) — no API tokens stored in this repo.
 # Configure the trusted publisher once on https://pypi.org/manage/account/publishing/
-# (project: agentic-flink, owner: Ugbot, repo: Agentic-Flink, workflow: publish-pypi.yml,
+# (project: agentic-flink, owner: Ugbot, repo: Agentic-Streaming, workflow: publish-pypi.yml,
 #  environment: pypi).
+#
+# NOTE: the repo was renamed Agentic-Flink -> Agentic-Streaming. PyPI matches the
+# OIDC token's `repository` claim exactly, so the trusted publisher must be
+# re-registered against Agentic-Streaming on pypi.org or this upload is rejected.
 
 on:
   release:
