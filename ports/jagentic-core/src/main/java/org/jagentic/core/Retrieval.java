@@ -74,7 +74,11 @@ public final class Retrieval {
     private final LinkedHashMap<String, Entry> entries =
         new LinkedHashMap<>(16, 0.75f, false) {
           @Override
-          protected boolean removeEldestEntry(Map.Entry<String, Entry> e) {
+          // Must be qualified: inside this anonymous LinkedHashMap subclass a bare
+          // `Entry` resolves to the inherited java.util.Map.Entry rather than the
+          // record above, and the resulting signature then clashes on erasure with
+          // the real one — a compile error, not a silent overload.
+          protected boolean removeEldestEntry(Map.Entry<String, InMemoryHotVectorIndex.Entry> e) {
             return size() > max;
           }
         };

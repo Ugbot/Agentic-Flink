@@ -30,6 +30,22 @@ class JAgenticCoreTest {
   }
 
   @Test
+  void hotIndexEvictsBeyondItsCapacityBound() {
+    // Pins the "capacity-bounded" contract of InMemoryHotVectorIndex. javac already
+    // rejects a mistyped removeEldestEntry (erasure clash), so this covers the part
+    // the compiler cannot: that the eviction policy itself still bounds the window.
+    Retrieval.InMemoryHotVectorIndex hot = new Retrieval.InMemoryHotVectorIndex(3);
+    for (int i = 0; i < 10; i++) hot.upsert("k" + i, Retrieval.embed("doc " + i, 16), "doc " + i);
+    assertEquals(3, hot.size());
+
+    List<String> ids = hot.search(Retrieval.embed("doc 9", 16), 10).stream()
+        .map(Retrieval.Scored::id).toList();
+    assertEquals(3, ids.size());
+    assertTrue(ids.contains("k9"), "newest insert must survive eviction");
+    assertFalse(ids.contains("k0"), "eldest insert must have been evicted");
+  }
+
+  @Test
   void hotIndexKnnAndTwoTierDedup() {
     Retrieval.InMemoryHotVectorIndex hot = new Retrieval.InMemoryHotVectorIndex(100);
     hot.upsert("h1", Retrieval.embed("the cat sat on the mat", 64), "cat on mat");
