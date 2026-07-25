@@ -33,10 +33,10 @@ test = ["pytest>=7"]
 all = ["agentic-flink[pyflink,test]"]
 
 [project.urls]
-Homepage = "https://github.com/Ugbot/Agentic-Flink"
-Repository = "https://github.com/Ugbot/Agentic-Flink"
-Issues = "https://github.com/Ugbot/Agentic-Flink/issues"
-Documentation = "https://github.com/Ugbot/Agentic-Flink/blob/main/docs/python.md"
+Homepage = "https://github.com/Ugbot/Agentic-Streaming"
+Repository = "https://github.com/Ugbot/Agentic-Streaming"
+Issues = "https://github.com/Ugbot/Agentic-Streaming/issues"
+Documentation = "https://github.com/Ugbot/Agentic-Streaming/blob/main/docs/python.md"
 
 [tool.setuptools.packages.find]
 where = ["."]

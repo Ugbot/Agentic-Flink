@@ -10,7 +10,9 @@ requires-python = ">=3.9"
 dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+# PyYAML is needed by tests/test_cep_weave.py, which drives the sibling
+# agentic-pipeline YAML loader. The library itself still has no runtime deps.
+test = ["pytest>=7", "PyYAML>=6"]
 
 [tool.setuptools.packages.find]
 include = ["pyagentic*"]

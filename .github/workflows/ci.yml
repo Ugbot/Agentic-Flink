@@ -1,0 +1,155 @@
+name: CI
+
+# Builds and tests every language surface in the repo. Until this existed, the
+# only automation was the two PyPI publish jobs — nothing compiled Java, and a
+# compile error in ports/jagentic-core (AGS-9) left the whole JVM tree
+# unbuildable from a clean checkout without anyone noticing.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  jvm:
+    name: JVM (Java 21)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      # The build order below is manual because there is no Maven reactor: the
+      # root pom has no <modules> and every module is built by an explicit -f.
+      # ports/jagentic-core is a hard compile-scope dependency of the main
+      # module and is not published anywhere, so it has to be installed first.
+      # AGS-10 tracks replacing this with a real parent pom.
+      - name: jagentic-core (shared JVM core)
+        run: mvn -B -ntp -f ports/jagentic-core/pom.xml install
+
+      # `install` rather than `test`: runs the main suite AND publishes the
+      # artifact that a2a-gateway and banking-job depend on.
+      - name: agentic-flink (main module)
+        run: mvn -B -ntp install
+
+      - name: ports/kafka-streams
+        run: mvn -B -ntp -f ports/kafka-streams/pom.xml test
+      - name: ports/spring
+        run: mvn -B -ntp -f ports/spring/pom.xml test
+      - name: ports/quarkus
+        run: mvn -B -ntp -f ports/quarkus/pom.xml test
+      - name: ports/temporal
+        run: mvn -B -ntp -f ports/temporal/pom.xml test
+      - name: ports/pekko
+        run: mvn -B -ntp -f ports/pekko/pom.xml test
+      - name: ports/pulsar
+        run: mvn -B -ntp -f ports/pulsar/pom.xml test
+
+      - name: agentic-pekko (actor runtime)
+        run: mvn -B -ntp -f agentic-pekko/pom.xml test
+
+      - name: tool-services (packs, then app)
+        run: |
+          mvn -B -ntp -f tool-services/tool-services-packs/pom.xml install
+          mvn -B -ntp -f tool-services/tool-services-app/pom.xml test
+
+      - name: a2a-gateway
+        run: mvn -B -ntp -f a2a-gateway/pom.xml test
+
+      - name: banking-job (uber-jar assembly)
+        run: mvn -B -ntp -f banking-job/pom.xml test
+
+      - name: Collect surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: "**/target/surefire-reports/*.txt"
+          if-no-files-found: warn
+          retention-days: 7
+
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: ports/go
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ports/go/go.mod
+          cache-dependency-path: ports/go/go.sum
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test
+        run: go test ./...
+
+  clojure:
+    name: Clojure (Datomic runtime)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: DeLaGuardo/setup-clojure@13.6.1
+        with:
+          cli: latest
+
+      - name: Cache clojure deps
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: clj-${{ runner.os }}-${{ hashFiles('agentic-clj/deps.edn') }}
+          restore-keys: clj-${{ runner.os }}-
+
+      - name: clojure -X:test
+        working-directory: agentic-clj
+        run: clojure -X:test
+
+  python:
+    name: Python (pyagentic + adapters)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # `celery` is needed because ports/tests exercises the Celery adapter
+      # against the real engine in eager mode (no broker required); without it
+      # two tests hard-fail rather than skipping.
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "ports/pyagentic[test]" celery
+
+      - name: pyagentic
+        run: python -m pytest ports/pyagentic/tests -q
+
+      - name: port adapters
+        run: python -m pytest ports/tests -q
